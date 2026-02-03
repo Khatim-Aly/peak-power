@@ -1,19 +1,17 @@
 import Navigation from "@/components/Navigation";
-import Hero from "@/components/Hero";
-import Benefits from "@/components/Benefits";
 import ProductCard from "@/components/ProductCard";
+import Benefits from "@/components/Benefits";
 import TrustBadges from "@/components/TrustBadges";
 import Testimonials from "@/components/Testimonials";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
 
-const Index = () => {
+const Product = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pt-20">
       <Navigation />
-      <Hero />
-      <Benefits />
       <ProductCard />
+      <Benefits />
       <TrustBadges />
       <Testimonials />
       <CTASection />
@@ -22,4 +20,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Product;
