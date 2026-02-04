@@ -85,7 +85,7 @@ const Hero = () => {
               className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-8"
             >
               Experience the power of Pure Himalayan Shilajit — sourced from 
-              the highest peaks to boost your energy, strength, and wellness naturally.
+              Gilgit-Baltistan to boost your energy, strength, and wellness naturally.
             </motion.p>
 
             {/* CTA Buttons */}

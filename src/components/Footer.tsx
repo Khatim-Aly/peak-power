@@ -42,15 +42,18 @@ const Footer = () => {
             transition={{ duration: 0.5 }}
             className="space-y-6"
           >
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-gradient-gold flex items-center justify-center">
-                <span className="text-secondary font-serif font-bold text-xl">S</span>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-gradient-gold flex items-center justify-center shadow-gold">
+                <span className="text-secondary font-serif font-bold text-lg">PP</span>
               </div>
-              <span className="font-serif text-xl font-semibold">Shilajit</span>
+              <div className="flex flex-col">
+                <span className="font-serif text-lg font-bold leading-tight">PeakPower</span>
+                <span className="text-xs font-medium text-gold tracking-wider">GB</span>
+              </div>
             </div>
             <p className="text-secondary-foreground/70 text-sm leading-relaxed">
-              Pure Himalayan Shilajit sourced from the highest peaks. 
-              Ancient wisdom meets modern wellness for your vitality.
+              Pure Himalayan Shilajit sourced from Gilgit-Baltistan. 
+              Natural energy at its peak for your vitality and wellness.
             </p>
             <div className="flex gap-3">
               {socialLinks.map((social) => (
@@ -123,7 +126,7 @@ const Footer = () => {
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-sm text-secondary-foreground/70">
                 <MapPin className="w-4 h-4 mt-0.5 text-gold flex-shrink-0" />
-                <span>Himalayan Wellness Center, Kathmandu, Nepal</span>
+                <span>Gilgit-Baltistan, Pakistan</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-secondary-foreground/70">
                 <Mail className="w-4 h-4 text-gold flex-shrink-0" />
@@ -147,7 +150,7 @@ const Footer = () => {
         <div className="container mx-auto px-4 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-secondary-foreground/50 text-sm">
-              © {currentYear} Pure Himalayan Shilajit. All rights reserved.
+              © {currentYear} PeakPower GB. All rights reserved.
             </p>
             <div className="flex gap-6">
               {footerLinks.legal.map((link) => (
