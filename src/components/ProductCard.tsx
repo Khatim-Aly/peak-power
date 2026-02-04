@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, Star, Minus, Plus, ShoppingCart } from "lucide-react";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
-import heroProduct from "@/assets/hero-product.jpg";
+import { useNavigate } from "react-router-dom";
+import ProductGallery from "./ProductGallery";
 
 interface ProductVariant {
   id: string;
@@ -17,6 +18,7 @@ interface ProductVariant {
 
 const ProductCard = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [selectedVariant, setSelectedVariant] = useState<string>("20g");
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -58,11 +60,15 @@ const ProductCard = () => {
     });
   };
 
+  const handleBuyNow = () => {
+    navigate("/checkout");
+  };
+
   return (
     <section className="py-24 relative overflow-hidden" id="product">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
-          {/* Product Image */}
+          {/* Product Gallery */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -70,41 +76,24 @@ const ProductCard = () => {
             transition={{ duration: 0.6 }}
             className="relative lg:sticky lg:top-32"
           >
-            <div className="glass-card p-4 rounded-3xl">
-              <div className="aspect-square rounded-2xl overflow-hidden relative group">
-                <img 
-                  src={heroProduct}
-                  alt="Pure Himalayan Shilajit"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
+            <ProductGallery />
 
-                {/* Discount Badge */}
-                <motion.div
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="absolute top-4 right-4 badge-discount"
+            {/* Trust Badges Below Image */}
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              {[
+                "100% Authentic",
+                "Lab Tested",
+                "No Additives",
+                "Himalayan Source",
+              ].map((badge) => (
+                <div
+                  key={badge}
+                  className="flex items-center gap-2 text-sm text-muted-foreground"
                 >
-                  {currentVariant.discount}% OFF
-                </motion.div>
-              </div>
-
-              {/* Trust Badges Below Image */}
-              <div className="mt-6 grid grid-cols-2 gap-3">
-                {[
-                  "100% Authentic",
-                  "Lab Tested",
-                  "No Additives",
-                  "Himalayan Source",
-                ].map((badge) => (
-                  <div
-                    key={badge}
-                    className="flex items-center gap-2 text-sm text-muted-foreground"
-                  >
-                    <Check className="w-4 h-4 text-gold" />
-                    <span>{badge}</span>
-                  </div>
-                ))}
-              </div>
+                  <Check className="w-4 h-4 text-gold" />
+                  <span>{badge}</span>
+                </div>
+              ))}
             </div>
           </motion.div>
 
@@ -269,27 +258,37 @@ const ProductCard = () => {
               </div>
             </div>
 
-            {/* Add to Cart Button */}
-            <Button
-              variant="hero"
-              size="xl"
-              className="w-full"
-              onClick={handleAddToCart}
-              disabled={isAddingToCart}
-            >
-              {isAddingToCart ? (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  className="w-6 h-6 border-2 border-secondary border-t-transparent rounded-full"
-                />
-              ) : (
-                <>
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  Add to Cart
-                </>
-              )}
-            </Button>
+            {/* Action Buttons */}
+            <div className="flex gap-4">
+              <Button
+                variant="outline"
+                size="xl"
+                className="flex-1"
+                onClick={handleAddToCart}
+                disabled={isAddingToCart}
+              >
+                {isAddingToCart ? (
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="w-6 h-6 border-2 border-foreground border-t-transparent rounded-full"
+                  />
+                ) : (
+                  <>
+                    <ShoppingCart className="w-5 h-5 mr-2" />
+                    Add to Cart
+                  </>
+                )}
+              </Button>
+              <Button
+                variant="hero"
+                size="xl"
+                className="flex-1"
+                onClick={handleBuyNow}
+              >
+                Buy Now
+              </Button>
+            </div>
 
             {/* Guarantee */}
             <p className="text-center text-sm text-muted-foreground mt-4">
