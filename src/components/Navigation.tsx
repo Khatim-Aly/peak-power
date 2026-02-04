@@ -39,16 +39,29 @@ const Navigation = () => {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
+          <Link to="/" className="flex items-center gap-3 group">
             <motion.div
-              whileHover={{ rotate: 10 }}
-              className="w-10 h-10 rounded-full bg-gradient-gold flex items-center justify-center"
+              whileHover={{ scale: 1.05 }}
+              className="w-10 h-10 rounded-lg overflow-hidden bg-gradient-gold flex items-center justify-center shadow-gold"
             >
-              <span className="text-secondary font-serif font-bold text-xl">S</span>
+              <img
+                src="/peakpower-icon.png"
+                alt="PeakPower GB"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.parentElement!.innerHTML = '<span class="text-secondary font-serif font-bold text-xl">PP</span>';
+                }}
+              />
             </motion.div>
-            <span className="font-serif text-xl font-semibold text-foreground group-hover:text-gold transition-colors">
-              Shilajit
-            </span>
+            <div className="flex flex-col">
+              <span className="font-serif text-lg font-bold text-foreground group-hover:text-gold transition-colors leading-tight">
+                PeakPower
+              </span>
+              <span className="text-xs font-medium text-gold tracking-wider">
+                GB
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
