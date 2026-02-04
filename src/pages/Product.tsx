@@ -5,6 +5,7 @@ import TrustBadges from "@/components/TrustBadges";
 import Testimonials from "@/components/Testimonials";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
+import StickyBuyButton from "@/components/StickyBuyButton";
 
 const Product = () => {
   return (
@@ -16,6 +17,7 @@ const Product = () => {
       <Testimonials />
       <CTASection />
       <Footer />
+      <StickyBuyButton price={2800} originalPrice={4000} />
     </div>
   );
 };

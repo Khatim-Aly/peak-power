@@ -52,19 +52,19 @@ const Contact = () => {
     {
       icon: Mail,
       title: "Email Us",
-      value: "hello@shilajit.com",
+      value: "khatimali.ecr@gmail.com",
       description: "We'll respond within 24 hours",
     },
     {
       icon: Phone,
       title: "Call Us",
-      value: "+977-123-456-7890",
-      description: "Mon-Fri, 9AM to 6PM IST",
+      value: "+92 355 442 1113",
+      description: "Mon-Fri, 9AM to 6PM",
     },
     {
       icon: MapPin,
       title: "Visit Us",
-      value: "Kathmandu, Nepal",
+      value: "Pakistan",
       description: "Himalayan Wellness Center",
     },
   ];
@@ -330,7 +330,7 @@ const Contact = () => {
                   Can't find the answer you're looking for? Our support team is just a message away.
                 </p>
                 <Button variant="glow" size="sm" asChild>
-                  <a href="mailto:support@shilajit.com">
+                  <a href="mailto:khatimali.ecr@gmail.com">
                     Email Support
                   </a>
                 </Button>
