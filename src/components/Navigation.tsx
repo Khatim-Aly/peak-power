@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ShoppingBag, User, LogOut } from "lucide-react";
+import { Menu, X, ShoppingBag, User, LogOut, LayoutDashboard } from "lucide-react";
 import { Button } from "./ui/button";
 import ThemeToggle from "./ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
@@ -124,6 +124,12 @@ const Navigation = () => {
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem className="text-muted-foreground text-xs">
                       {user.email}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/dashboard" className="flex items-center">
+                        <LayoutDashboard className="w-4 h-4 mr-2" />
+                        Dashboard
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={signOut} className="text-destructive">
                       <LogOut className="w-4 h-4 mr-2" />
