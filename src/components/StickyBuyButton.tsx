@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart } from "lucide-react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
+import { AuthModal } from "./auth/AuthModal";
+import { useProtectedAction } from "@/hooks/useProtectedAction";
 
 interface StickyBuyButtonProps {
   price: number;
@@ -13,6 +15,13 @@ const StickyBuyButton = ({ price = 2800, originalPrice = 4000 }: StickyBuyButton
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
+  
+  const { 
+    showAuthModal, 
+    setShowAuthModal, 
+    executeProtectedAction, 
+    executePendingAction 
+  } = useProtectedAction();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -35,45 +44,58 @@ const StickyBuyButton = ({ price = 2800, originalPrice = 4000 }: StickyBuyButton
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleBuyNow = () => {
+  const performBuyNow = () => {
     navigate("/checkout");
+  };
+
+  const handleBuyNow = () => {
+    executeProtectedAction(performBuyNow);
   };
 
   // Only show on mobile
   if (!isMobile) return null;
 
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="fixed bottom-0 left-0 right-0 z-40 p-4 bg-background/95 backdrop-blur-xl border-t border-border shadow-lg"
-        >
-          <div className="flex items-center justify-between gap-4 max-w-lg mx-auto">
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground line-through">
-                Rs. {originalPrice.toLocaleString()}
-              </span>
-              <span className="text-xl font-bold text-gradient-gold">
-                Rs. {price.toLocaleString()}
-              </span>
+    <>
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed bottom-0 left-0 right-0 z-40 p-4 bg-background/95 backdrop-blur-xl border-t border-border shadow-lg"
+          >
+            <div className="flex items-center justify-between gap-4 max-w-lg mx-auto">
+              <div className="flex flex-col">
+                <span className="text-xs text-muted-foreground line-through">
+                  Rs. {originalPrice.toLocaleString()}
+                </span>
+                <span className="text-xl font-bold text-gradient-gold">
+                  Rs. {price.toLocaleString()}
+                </span>
+              </div>
+              <Button 
+                variant="hero" 
+                size="lg" 
+                className="flex-1 max-w-[200px]"
+                onClick={handleBuyNow}
+              >
+                <ShoppingCart className="w-5 h-5 mr-2" />
+                Buy Now
+              </Button>
             </div>
-            <Button 
-              variant="hero" 
-              size="lg" 
-              className="flex-1 max-w-[200px]"
-              onClick={handleBuyNow}
-            >
-              <ShoppingCart className="w-5 h-5 mr-2" />
-              Buy Now
-            </Button>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={executePendingAction}
+      />
+    </>
   );
 };
 

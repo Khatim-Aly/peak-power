@@ -5,6 +5,8 @@ import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import ProductGallery from "./ProductGallery";
+import { AuthModal } from "./auth/AuthModal";
+import { useProtectedAction } from "@/hooks/useProtectedAction";
 
 interface ProductVariant {
   id: string;
@@ -22,6 +24,13 @@ const ProductCard = () => {
   const [selectedVariant, setSelectedVariant] = useState<string>("20g");
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  
+  const { 
+    showAuthModal, 
+    setShowAuthModal, 
+    executeProtectedAction, 
+    executePendingAction 
+  } = useProtectedAction();
 
   const variants: ProductVariant[] = [
     {
@@ -48,9 +57,8 @@ const ProductCard = () => {
   const totalPrice = currentVariant.finalPrice * quantity;
   const totalSavings = savings * quantity;
 
-  const handleAddToCart = async () => {
+  const performAddToCart = async () => {
     setIsAddingToCart(true);
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsAddingToCart(false);
     
@@ -60,8 +68,16 @@ const ProductCard = () => {
     });
   };
 
-  const handleBuyNow = () => {
+  const performBuyNow = () => {
     navigate("/checkout");
+  };
+
+  const handleAddToCart = () => {
+    executeProtectedAction(performAddToCart);
+  };
+
+  const handleBuyNow = () => {
+    executeProtectedAction(performBuyNow);
   };
 
   return (
@@ -297,6 +313,13 @@ const ProductCard = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={executePendingAction}
+      />
     </section>
   );
 };
