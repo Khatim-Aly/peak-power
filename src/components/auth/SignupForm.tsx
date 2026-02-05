@@ -1,17 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, ArrowRight, CheckCircle } from "lucide-react";
+import { Loader2, ArrowRight, CheckCircle, User, Store, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FloatingLabelInput } from "./FloatingLabelInput";
 import { PasswordStrengthMeter } from "./PasswordStrengthMeter";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth, AppRole } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
 const signupSchema = z
   .object({
+    fullName: z.string().min(2, "Name must be at least 2 characters"),
     email: z.string().email("Please enter a valid email"),
     password: z
       .string()
@@ -34,11 +35,18 @@ interface SignupFormProps {
   onSwitchToLogin: () => void;
 }
 
+const roleOptions: { role: AppRole; label: string; icon: React.ElementType; description: string }[] = [
+  { role: 'user', label: 'Customer', icon: User, description: 'Shop & track orders' },
+  { role: 'merchant', label: 'Merchant', icon: Store, description: 'Sell products' },
+  { role: 'admin', label: 'Admin', icon: Shield, description: 'Manage platform' },
+];
+
 export const SignupForm = ({ onSuccess, onSwitchToLogin }: SignupFormProps) => {
   const { signUp } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<AppRole>('user');
 
   const {
     register,
@@ -56,7 +64,7 @@ export const SignupForm = ({ onSuccess, onSwitchToLogin }: SignupFormProps) => {
 
   const onSubmit = async (data: SignupFormData) => {
     setIsLoading(true);
-    const { error } = await signUp(data.email, data.password);
+    const { error } = await signUp(data.email, data.password, selectedRole, data.fullName);
 
     if (error) {
       setIsLoading(false);
@@ -122,6 +130,53 @@ export const SignupForm = ({ onSuccess, onSwitchToLogin }: SignupFormProps) => {
       onSubmit={handleSubmit(onSubmit)}
       className="space-y-5"
     >
+      {/* Role Selection */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-muted-foreground">Account Type</label>
+        <div className="grid grid-cols-3 gap-2">
+          {roleOptions.map(({ role, label, icon: Icon, description }) => (
+            <motion.button
+              key={role}
+              type="button"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setSelectedRole(role)}
+              className={`relative p-3 rounded-xl border-2 transition-all text-center ${
+                selectedRole === role
+                  ? 'border-gold bg-gold/10'
+                  : 'border-border hover:border-gold/50'
+              }`}
+            >
+              <Icon className={`w-5 h-5 mx-auto mb-1 ${
+                selectedRole === role ? 'text-gold' : 'text-muted-foreground'
+              }`} />
+              <span className={`text-xs font-medium block ${
+                selectedRole === role ? 'text-foreground' : 'text-muted-foreground'
+              }`}>
+                {label}
+              </span>
+              {selectedRole === role && (
+                <motion.div
+                  layoutId="roleIndicator"
+                  className="absolute inset-0 rounded-xl border-2 border-gold"
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              )}
+            </motion.button>
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground text-center">
+          {roleOptions.find(r => r.role === selectedRole)?.description}
+        </p>
+      </div>
+
+      <FloatingLabelInput
+        label="Full Name"
+        type="text"
+        error={errors.fullName?.message}
+        {...register("fullName")}
+      />
+
       <FloatingLabelInput
         label="Email Address"
         type="email"
@@ -188,7 +243,7 @@ export const SignupForm = ({ onSuccess, onSwitchToLogin }: SignupFormProps) => {
                 exit={{ opacity: 0, scale: 0.8 }}
                 className="flex items-center gap-2"
               >
-                Create Account
+                Create {roleOptions.find(r => r.role === selectedRole)?.label} Account
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </motion.span>
             )}
