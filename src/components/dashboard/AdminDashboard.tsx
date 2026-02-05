@@ -12,9 +12,12 @@ import {
   XCircle,
   Eye,
   Ban,
-  UserCheck
+  UserCheck,
+  Edit,
+  Plus
 } from "lucide-react";
 import { DashboardLayout } from "./DashboardLayout";
+import { UserEditModal } from "./UserEditModal";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,9 +36,12 @@ import { useToast } from "@/hooks/use-toast";
 interface UserProfile {
   id: string;
   user_id: string;
-  full_name: string;
-  email: string;
-  phone: string;
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  city: string | null;
+  postal_code: string | null;
   created_at: string;
 }
 
@@ -50,12 +56,15 @@ export const AdminDashboard = () => {
   const [roles, setRoles] = useState<UserRole[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSeedingAdmin, setIsSeedingAdmin] = useState(false);
+  const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
+    setIsLoading(true);
     const [usersRes, rolesRes, ordersRes] = await Promise.all([
       supabase.from('profiles').select('*').order('created_at', { ascending: false }),
       supabase.from('user_roles').select('*'),
@@ -66,6 +75,37 @@ export const AdminDashboard = () => {
     if (rolesRes.data) setRoles(rolesRes.data);
     if (ordersRes.data) setOrders(ordersRes.data);
     setIsLoading(false);
+  };
+
+  const seedDefaultAdmin = async () => {
+    setIsSeedingAdmin(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('seed-admin');
+      
+      if (error) throw error;
+
+      toast({
+        title: "Admin Seeded",
+        description: data.message,
+      });
+
+      if (data.credentials) {
+        toast({
+          title: "Admin Credentials",
+          description: `Email: ${data.credentials.email}`,
+        });
+      }
+
+      fetchData();
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to seed admin",
+      });
+    } finally {
+      setIsSeedingAdmin(false);
+    }
   };
 
   const getUserRole = (userId: string) => {
@@ -124,6 +164,23 @@ export const AdminDashboard = () => {
       title="Admin Control Panel"
       subtitle="Manage users, merchants, and monitor platform activity"
     >
+      {/* Admin Actions Bar */}
+      <div className="flex items-center justify-between mb-6 p-4 bg-card rounded-xl border border-border">
+        <div>
+          <h3 className="font-medium">Quick Actions</h3>
+          <p className="text-sm text-muted-foreground">Manage platform settings and users</p>
+        </div>
+        <Button 
+          onClick={seedDefaultAdmin}
+          disabled={isSeedingAdmin}
+          variant="outline"
+          className="flex items-center gap-2"
+        >
+          <Plus className="w-4 h-4" />
+          {isSeedingAdmin ? 'Creating...' : 'Seed Default Admin'}
+        </Button>
+      </div>
+
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {stats.map((stat, index) => (
@@ -188,6 +245,7 @@ export const AdminDashboard = () => {
                   getRoleBadge={getRoleBadge} 
                   getUserRole={getUserRole}
                   onUpdateRole={updateUserRole}
+                  onEditUser={setEditingUser}
                 />
               </TabsContent>
 
@@ -197,6 +255,7 @@ export const AdminDashboard = () => {
                   getRoleBadge={getRoleBadge} 
                   getUserRole={getUserRole}
                   onUpdateRole={updateUserRole}
+                  onEditUser={setEditingUser}
                 />
               </TabsContent>
 
@@ -206,6 +265,7 @@ export const AdminDashboard = () => {
                   getRoleBadge={getRoleBadge} 
                   getUserRole={getUserRole}
                   onUpdateRole={updateUserRole}
+                  onEditUser={setEditingUser}
                 />
               </TabsContent>
 
@@ -216,6 +276,17 @@ export const AdminDashboard = () => {
           )}
         </Tabs>
       </div>
+
+      {/* Edit User Modal */}
+      {editingUser && (
+        <UserEditModal
+          isOpen={!!editingUser}
+          onClose={() => setEditingUser(null)}
+          user={editingUser}
+          currentRole={getUserRole(editingUser.user_id)}
+          onSave={fetchData}
+        />
+      )}
     </DashboardLayout>
   );
 };
@@ -224,10 +295,11 @@ interface UsersTableProps {
   users: UserProfile[];
   getRoleBadge: (role: string) => React.ReactNode;
   getUserRole: (userId: string) => string;
-  onUpdateRole: (userId: string, role: string) => void;
+  onUpdateRole: (userId: string, role: 'user' | 'merchant' | 'admin') => void;
+  onEditUser: (user: UserProfile) => void;
 }
 
-const UsersTable = ({ users, getRoleBadge, getUserRole, onUpdateRole }: UsersTableProps) => {
+const UsersTable = ({ users, getRoleBadge, getUserRole, onUpdateRole, onEditUser }: UsersTableProps) => {
   if (users.length === 0) {
     return (
       <div className="p-12 text-center">
@@ -269,6 +341,15 @@ const UsersTable = ({ users, getRoleBadge, getUserRole, onUpdateRole }: UsersTab
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => onEditUser(user)}
+                      className="text-gold hover:text-gold"
+                    >
+                      <Edit className="w-4 h-4 mr-1" />
+                      Edit
+                    </Button>
                     {role !== 'merchant' && (
                       <Button 
                         variant="outline" 
@@ -276,7 +357,7 @@ const UsersTable = ({ users, getRoleBadge, getUserRole, onUpdateRole }: UsersTab
                         onClick={() => onUpdateRole(user.user_id, 'merchant')}
                       >
                         <Store className="w-4 h-4 mr-1" />
-                        Make Merchant
+                        Merchant
                       </Button>
                     )}
                     {role !== 'admin' && (
@@ -286,7 +367,7 @@ const UsersTable = ({ users, getRoleBadge, getUserRole, onUpdateRole }: UsersTab
                         onClick={() => onUpdateRole(user.user_id, 'admin')}
                       >
                         <Shield className="w-4 h-4 mr-1" />
-                        Make Admin
+                        Admin
                       </Button>
                     )}
                     {role !== 'user' && (
@@ -296,7 +377,7 @@ const UsersTable = ({ users, getRoleBadge, getUserRole, onUpdateRole }: UsersTab
                         onClick={() => onUpdateRole(user.user_id, 'user')}
                       >
                         <UserCheck className="w-4 h-4 mr-1" />
-                        Reset to User
+                        User
                       </Button>
                     )}
                   </div>
