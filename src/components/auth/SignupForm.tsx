@@ -32,13 +32,12 @@ type SignupFormData = z.infer<typeof signupSchema>;
 
 interface SignupFormProps {
   onSuccess: () => void;
-  onSwitchToLogin: () => void;
+  onSwitchToLogin: (prefill?: 'admin') => void;
 }
 
 const roleOptions: { role: AppRole; label: string; icon: React.ElementType; description: string }[] = [
   { role: 'user', label: 'Customer', icon: User, description: 'Shop & track orders' },
   { role: 'merchant', label: 'Merchant', icon: Store, description: 'Sell products' },
-  { role: 'admin', label: 'Admin', icon: Shield, description: 'Manage platform' },
 ];
 
 export const SignupForm = ({ onSuccess, onSwitchToLogin }: SignupFormProps) => {
@@ -112,7 +111,7 @@ export const SignupForm = ({ onSuccess, onSwitchToLogin }: SignupFormProps) => {
 
         <Button
           variant="outline"
-          onClick={onSwitchToLogin}
+          onClick={() => onSwitchToLogin()}
           className="mx-auto"
         >
           Back to Login
@@ -305,17 +304,28 @@ export const SignupForm = ({ onSuccess, onSwitchToLogin }: SignupFormProps) => {
       </div>
 
       {/* Switch to Login */}
-      <p className="text-center text-sm text-muted-foreground">
-        Already have an account?{" "}
+      <div className="text-center space-y-2">
+        <p className="text-sm text-muted-foreground">
+          Already have an account?{" "}
+          <motion.button
+            type="button"
+            whileHover={{ scale: 1.02 }}
+            onClick={() => onSwitchToLogin()}
+            className="text-gold hover:text-gold/80 font-semibold transition-colors"
+          >
+            Sign in
+          </motion.button>
+        </p>
         <motion.button
           type="button"
           whileHover={{ scale: 1.02 }}
-          onClick={onSwitchToLogin}
-          className="text-gold hover:text-gold/80 font-semibold transition-colors"
+          onClick={() => onSwitchToLogin('admin')}
+          className="text-xs text-muted-foreground hover:text-gold transition-colors flex items-center justify-center gap-1 mx-auto"
         >
-          Sign in
+          <Shield className="w-3 h-3" />
+          Login as Admin
         </motion.button>
-      </p>
+      </div>
     </motion.form>
   );
 };

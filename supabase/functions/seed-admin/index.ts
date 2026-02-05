@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
     })
 
     // Default admin credentials
-    const adminEmail = 'admin@peakpower.gb'
+    const adminEmail = 'khatimaly@gmail.com'
     const adminPassword = '123213@123213'
     const adminName = 'Admin'
 

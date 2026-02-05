@@ -19,9 +19,10 @@ type LoginFormData = z.infer<typeof loginSchema>;
 interface LoginFormProps {
   onSuccess: () => void;
   onSwitchToSignup: () => void;
+  prefillAdmin?: boolean;
 }
 
-export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
+export const LoginForm = ({ onSuccess, onSwitchToSignup, prefillAdmin }: LoginFormProps) => {
   const { signIn } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -34,8 +35,13 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
     formState: { errors },
     setError,
     watch,
+    setValue,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    defaultValues: prefillAdmin ? {
+      email: 'khatimaly@gmail.com',
+      password: '123213@123213',
+    } : undefined,
   });
 
   const onSubmit = async (data: LoginFormData) => {
