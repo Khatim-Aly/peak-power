@@ -207,10 +207,66 @@ const Navigation = () => {
                   </Link>
                 </motion.div>
               ))}
+              
+              {/* Mobile Auth Section */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.4 }}
+                className="pt-2 border-t border-border"
+              >
+                {!isLoading && (
+                  user ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3 px-4 py-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-gold flex items-center justify-center shadow-gold">
+                          <span className="text-secondary font-bold text-sm">
+                            {user.email?.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                        </div>
+                      </div>
+                      <Link
+                        to="/dashboard"
+                        onClick={() => setIsOpen(false)}
+                        className="flex items-center gap-3 py-3 px-4 rounded-xl text-foreground hover:bg-muted transition-colors"
+                      >
+                        <LayoutDashboard className="w-4 h-4" />
+                        Dashboard
+                      </Link>
+                      <button
+                        onClick={() => {
+                          signOut();
+                          setIsOpen(false);
+                        }}
+                        className="flex items-center gap-3 py-3 px-4 rounded-xl text-destructive hover:bg-destructive/10 transition-colors w-full text-left"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                      </button>
+                    </div>
+                  ) : (
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-center gap-2"
+                      onClick={() => {
+                        setShowAuthModal(true);
+                        setIsOpen(false);
+                      }}
+                    >
+                      <User className="w-4 h-4" />
+                      Sign In / Sign Up
+                    </Button>
+                  )
+                )}
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 }}
                 className="pt-2"
               >
                 <Button variant="glow" className="w-full" asChild>
