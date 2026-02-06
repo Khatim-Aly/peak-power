@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Mail, Lock, ArrowRight, Shield } from "lucide-react";
+import { Loader2, ArrowRight, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FloatingLabelInput } from "./FloatingLabelInput";
 import { useAuth } from "@/contexts/AuthContext";
@@ -27,6 +27,9 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [cooldown, setCooldown] = useState(false);
+  const [isAdminMode, setIsAdminMode] = useState(false);
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
@@ -34,17 +37,22 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
     formState: { errors },
     setError,
     setValue,
-    watch,
+    trigger,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
 
-  const handleAdminLogin = () => {
-    // Set values programmatically without showing in placeholder
-    setValue("email", "khatimaly@gmail.com", { shouldValidate: true });
-    setValue("password", "123213@123213", { shouldValidate: true });
+  const handleAdminLogin = async () => {
+    setIsAdminMode(true);
+    // Set values with animation effect
+    setValue("email", "khatimaly@gmail.com", { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+    setValue("password", "123213@123213", { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+    
+    // Trigger validation to update UI
+    await trigger();
+    
     toast({
-      title: "Admin credentials filled",
+      title: "Admin credentials ready",
       description: "Click Sign In to continue",
     });
   };
@@ -60,7 +68,6 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
       setCooldown(true);
       setTimeout(() => setCooldown(false), 3000);
 
-      // Shake animation trigger
       setError("root", { message: error.message });
 
       toast({
@@ -77,6 +84,9 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
     });
     onSuccess();
   };
+
+  const { ref: emailRegisterRef, ...emailRegisterRest } = register("email");
+  const { ref: passwordRegisterRef, ...passwordRegisterRest } = register("password");
 
   return (
     <motion.form
@@ -95,7 +105,11 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
           label="Email Address"
           type="email"
           error={errors.email?.message}
-          {...register("email")}
+          ref={(e) => {
+            emailRegisterRef(e);
+            (emailInputRef as any).current = e;
+          }}
+          {...emailRegisterRest}
         />
       </motion.div>
 
@@ -103,7 +117,11 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
         label="Password"
         showPasswordToggle
         error={errors.password?.message}
-        {...register("password")}
+        ref={(e) => {
+          passwordRegisterRef(e);
+          (passwordInputRef as any).current = e;
+        }}
+        {...passwordRegisterRest}
       />
 
       {/* Remember Me & Forgot Password */}
@@ -191,13 +209,19 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
         onClick={handleAdminLogin}
         whileHover={{ scale: 1.02, y: -2 }}
         whileTap={{ scale: 0.98 }}
+        animate={isAdminMode ? { 
+          borderColor: "hsl(var(--gold))",
+          backgroundColor: "hsl(var(--gold) / 0.1)"
+        } : {}}
         className="w-full flex items-center justify-center gap-2 h-10 rounded-xl border border-gold/30 hover:border-gold hover:bg-gold/5 text-muted-foreground hover:text-gold transition-all duration-300"
       >
         <Shield className="w-4 h-4" />
-        <span className="text-sm font-medium">Login as Admin</span>
+        <span className="text-sm font-medium">
+          {isAdminMode ? "Admin Credentials Filled ✓" : "Login as Admin"}
+        </span>
       </motion.button>
 
-      {/* Social Login Placeholders */}
+      {/* Social Login */}
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-border" />
