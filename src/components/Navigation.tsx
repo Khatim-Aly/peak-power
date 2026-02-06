@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ShoppingBag, User, LogOut, LayoutDashboard } from "lucide-react";
 import { Button } from "./ui/button";
@@ -18,6 +18,7 @@ const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, signOut, isLoading } = useAuth();
 
   useEffect(() => {
@@ -28,12 +29,23 @@ const Navigation = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Scroll to top with smooth animation when route changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [location.pathname]);
+
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Product", path: "/product" },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];
+
+  const handleNavClick = (path: string) => {
+    // First scroll to top, then navigate
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigate(path);
+  };
 
   return (
     <motion.nav
@@ -49,7 +61,7 @@ const Navigation = () => {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
+          <button onClick={() => handleNavClick("/")} className="flex items-center gap-3 group">
             <motion.div
               whileHover={{ scale: 1.05 }}
               className="w-10 h-10 rounded-lg overflow-hidden bg-gradient-gold flex items-center justify-center shadow-gold"
@@ -72,15 +84,19 @@ const Navigation = () => {
                 GB
               </span>
             </div>
-          </Link>
+          </button>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
+            {navLinks.map((link, index) => (
+              <motion.button
                 key={link.path}
-                to={link.path}
+                onClick={() => handleNavClick(link.path)}
                 className="relative group"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1, duration: 0.3 }}
+                whileHover={{ y: -2 }}
               >
                 <span
                   className={`text-sm font-medium transition-colors ${
@@ -98,7 +114,7 @@ const Navigation = () => {
                   whileHover={{ width: "100%" }}
                   transition={{ duration: 0.3 }}
                 />
-              </Link>
+              </motion.button>
             ))}
           </div>
 
@@ -126,10 +142,10 @@ const Navigation = () => {
                       {user.email}
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/dashboard" className="flex items-center">
+                      <button onClick={() => handleNavClick("/dashboard")} className="flex items-center w-full">
                         <LayoutDashboard className="w-4 h-4 mr-2" />
                         Dashboard
-                      </Link>
+                      </button>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={signOut} className="text-destructive">
                       <LogOut className="w-4 h-4 mr-2" />
@@ -150,11 +166,9 @@ const Navigation = () => {
               )
             )}
             
-            <Button variant="glow" size="default" asChild>
-              <Link to="/product" className="flex items-center gap-2">
-                <ShoppingBag className="w-4 h-4" />
-                Shop Now
-              </Link>
+            <Button variant="glow" size="default" onClick={() => handleNavClick("/product")}>
+              <ShoppingBag className="w-4 h-4 mr-2" />
+              Shop Now
             </Button>
           </div>
 
@@ -180,39 +194,41 @@ const Navigation = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, y: -20, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: -20, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
             className="md:hidden glass-card mt-2 mx-4 rounded-2xl overflow-hidden"
           >
             <div className="p-4 space-y-2">
               {navLinks.map((link, index) => (
                 <motion.div
                   key={link.path}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.08, duration: 0.2 }}
                 >
-                  <Link
-                    to={link.path}
-                    onClick={() => setIsOpen(false)}
-                    className={`block py-3 px-4 rounded-xl transition-colors ${
+                  <button
+                    onClick={() => {
+                      handleNavClick(link.path);
+                      setIsOpen(false);
+                    }}
+                    className={`block w-full text-left py-3 px-4 rounded-xl transition-colors ${
                       location.pathname === link.path
                         ? "bg-gold/10 text-gold"
                         : "text-foreground hover:bg-muted"
                     }`}
                   >
                     {link.name}
-                  </Link>
+                  </button>
                 </motion.div>
               ))}
               
               {/* Mobile Auth Section */}
               <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 }}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.32, duration: 0.2 }}
                 className="pt-2 border-t border-border"
               >
                 {!isLoading && (
@@ -228,14 +244,16 @@ const Navigation = () => {
                           <p className="text-sm text-muted-foreground truncate">{user.email}</p>
                         </div>
                       </div>
-                      <Link
-                        to="/dashboard"
-                        onClick={() => setIsOpen(false)}
-                        className="flex items-center gap-3 py-3 px-4 rounded-xl text-foreground hover:bg-muted transition-colors"
+                      <button
+                        onClick={() => {
+                          handleNavClick("/dashboard");
+                          setIsOpen(false);
+                        }}
+                        className="flex items-center gap-3 py-3 px-4 rounded-xl text-foreground hover:bg-muted transition-colors w-full"
                       >
                         <LayoutDashboard className="w-4 h-4" />
                         Dashboard
-                      </Link>
+                      </button>
                       <button
                         onClick={() => {
                           signOut();
@@ -264,16 +282,21 @@ const Navigation = () => {
               </motion.div>
               
               <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 }}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.2 }}
                 className="pt-2"
               >
-                <Button variant="glow" className="w-full" asChild>
-                  <Link to="/product" onClick={() => setIsOpen(false)}>
-                    <ShoppingBag className="w-4 h-4 mr-2" />
-                    Shop Now
-                  </Link>
+                <Button 
+                  variant="glow" 
+                  className="w-full"
+                  onClick={() => {
+                    handleNavClick("/product");
+                    setIsOpen(false);
+                  }}
+                >
+                  <ShoppingBag className="w-4 h-4 mr-2" />
+                  Shop Now
                 </Button>
               </motion.div>
             </div>
