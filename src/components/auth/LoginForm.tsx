@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Mail, Lock, ArrowRight } from "lucide-react";
+import { Loader2, Mail, Lock, ArrowRight, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FloatingLabelInput } from "./FloatingLabelInput";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,10 +19,9 @@ type LoginFormData = z.infer<typeof loginSchema>;
 interface LoginFormProps {
   onSuccess: () => void;
   onSwitchToSignup: () => void;
-  prefillAdmin?: boolean;
 }
 
-export const LoginForm = ({ onSuccess, onSwitchToSignup, prefillAdmin }: LoginFormProps) => {
+export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
   const { signIn } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -34,15 +33,21 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup, prefillAdmin }: LoginFo
     handleSubmit,
     formState: { errors },
     setError,
-    watch,
     setValue,
+    watch,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    defaultValues: prefillAdmin ? {
-      email: 'khatimaly@gmail.com',
-      password: '123213@123213',
-    } : undefined,
   });
+
+  const handleAdminLogin = () => {
+    // Set values programmatically without showing in placeholder
+    setValue("email", "khatimaly@gmail.com", { shouldValidate: true });
+    setValue("password", "123213@123213", { shouldValidate: true });
+    toast({
+      title: "Admin credentials filled",
+      description: "Click Sign In to continue",
+    });
+  };
 
   const onSubmit = async (data: LoginFormData) => {
     if (cooldown) return;
@@ -179,6 +184,18 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup, prefillAdmin }: LoginFo
           </AnimatePresence>
         </Button>
       </motion.div>
+
+      {/* Admin Login Button */}
+      <motion.button
+        type="button"
+        onClick={handleAdminLogin}
+        whileHover={{ scale: 1.02, y: -2 }}
+        whileTap={{ scale: 0.98 }}
+        className="w-full flex items-center justify-center gap-2 h-10 rounded-xl border border-gold/30 hover:border-gold hover:bg-gold/5 text-muted-foreground hover:text-gold transition-all duration-300"
+      >
+        <Shield className="w-4 h-4" />
+        <span className="text-sm font-medium">Login as Admin</span>
+      </motion.button>
 
       {/* Social Login Placeholders */}
       <div className="relative">

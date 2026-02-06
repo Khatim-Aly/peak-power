@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, ArrowRight, CheckCircle, Shield } from "lucide-react";
+import { Loader2, ArrowRight, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FloatingLabelInput } from "./FloatingLabelInput";
 import { PasswordStrengthMeter } from "./PasswordStrengthMeter";
@@ -32,7 +32,7 @@ type SignupFormData = z.infer<typeof signupSchema>;
 
 interface SignupFormProps {
   onSuccess: () => void;
-  onSwitchToLogin: (prefill?: 'admin') => void;
+  onSwitchToLogin: () => void;
 }
 
 // SECURITY: Role selection removed - all signups are 'user' role only
@@ -264,28 +264,17 @@ export const SignupForm = ({ onSuccess, onSwitchToLogin }: SignupFormProps) => {
       </div>
 
       {/* Switch to Login */}
-      <div className="text-center space-y-2">
-        <p className="text-sm text-muted-foreground">
-          Already have an account?{" "}
-          <motion.button
-            type="button"
-            whileHover={{ scale: 1.02 }}
-            onClick={() => onSwitchToLogin()}
-            className="text-gold hover:text-gold/80 font-semibold transition-colors"
-          >
-            Sign in
-          </motion.button>
-        </p>
+      <p className="text-center text-sm text-muted-foreground">
+        Already have an account?{" "}
         <motion.button
           type="button"
           whileHover={{ scale: 1.02 }}
-          onClick={() => onSwitchToLogin('admin')}
-          className="text-xs text-muted-foreground hover:text-gold transition-colors flex items-center justify-center gap-1 mx-auto"
+          onClick={() => onSwitchToLogin()}
+          className="text-gold hover:text-gold/80 font-semibold transition-colors"
         >
-          <Shield className="w-3 h-3" />
-          Login as Admin
+          Sign in
         </motion.button>
-      </div>
+      </p>
     </motion.form>
   );
 };

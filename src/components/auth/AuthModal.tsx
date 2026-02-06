@@ -19,12 +19,6 @@ export const AuthModal = ({
   initialMode = "login",
 }: AuthModalProps) => {
   const [mode, setMode] = useState<"login" | "signup">(initialMode);
-  const [prefillAdmin, setPrefillAdmin] = useState(false);
-
-  const handleSwitchToLogin = (prefill?: 'admin') => {
-    setMode("login");
-    setPrefillAdmin(prefill === 'admin');
-  };
 
   const handleSuccess = () => {
     onSuccess();
@@ -145,13 +139,12 @@ export const AuthModal = ({
                         key="login"
                         onSuccess={handleSuccess}
                         onSwitchToSignup={() => setMode("signup")}
-                        prefillAdmin={prefillAdmin}
                       />
                     ) : (
                       <SignupForm
                         key="signup"
                         onSuccess={handleSuccess}
-                        onSwitchToLogin={handleSwitchToLogin}
+                        onSwitchToLogin={() => setMode("login")}
                       />
                     )}
                   </AnimatePresence>
