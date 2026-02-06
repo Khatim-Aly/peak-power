@@ -14,8 +14,53 @@ Deno.serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
 
-    // Create admin client with service role key
+    // SECURITY: Require authentication
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Authorization header required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Create client to verify the calling user
+    const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+      global: {
+        headers: { Authorization: authHeader }
+      }
+    })
+
+    // Verify the user is authenticated
+    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser()
+    
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid or expired token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // SECURITY: Check if the calling user is already an admin
+    const { data: roleData } = await supabaseAuth
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .single()
+
+    if (roleData?.role !== 'admin') {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Only existing admins can seed admin accounts' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Create admin client with service role key for user management
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
       auth: {
         autoRefreshToken: false,
@@ -23,10 +68,20 @@ Deno.serve(async (req) => {
       },
     })
 
-    // Default admin credentials
-    const adminEmail = 'khatimaly@gmail.com'
-    const adminPassword = '123213@123213'
+    // Get admin credentials from environment variables (secure)
+    const adminEmail = Deno.env.get('ADMIN_EMAIL')
+    const adminPassword = Deno.env.get('ADMIN_PASSWORD')
     const adminName = 'Admin'
+
+    if (!adminEmail || !adminPassword) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Admin credentials not configured. Set ADMIN_EMAIL and ADMIN_PASSWORD secrets.',
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
 
     // Check if admin already exists
     const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers()
@@ -37,10 +92,7 @@ Deno.serve(async (req) => {
         JSON.stringify({ 
           success: true, 
           message: 'Admin user already exists',
-          credentials: {
-            email: adminEmail,
-            password: '(already set - use existing password or reset)',
-          }
+          // SECURITY: Never return credentials in response
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
@@ -53,7 +105,7 @@ Deno.serve(async (req) => {
       email_confirm: true,
       user_metadata: {
         full_name: adminName,
-        role: 'admin',
+        // SECURITY: Don't set role in metadata - handled by trigger
       },
     })
 
@@ -79,10 +131,7 @@ Deno.serve(async (req) => {
       JSON.stringify({ 
         success: true, 
         message: 'Admin user created successfully',
-        credentials: {
-          email: adminEmail,
-          password: adminPassword,
-        }
+        // SECURITY: Never return credentials in response
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
@@ -90,7 +139,7 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error('Error:', error)
     return new Response(
-      JSON.stringify({ success: false, error: error.message }),
+      JSON.stringify({ success: false, error: 'An error occurred' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }

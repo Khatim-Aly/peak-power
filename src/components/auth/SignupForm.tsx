@@ -3,11 +3,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, ArrowRight, CheckCircle, User, Store, Shield } from "lucide-react";
+import { Loader2, ArrowRight, CheckCircle, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FloatingLabelInput } from "./FloatingLabelInput";
 import { PasswordStrengthMeter } from "./PasswordStrengthMeter";
-import { useAuth, AppRole } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
 const signupSchema = z
@@ -35,17 +35,14 @@ interface SignupFormProps {
   onSwitchToLogin: (prefill?: 'admin') => void;
 }
 
-const roleOptions: { role: AppRole; label: string; icon: React.ElementType; description: string }[] = [
-  { role: 'user', label: 'Customer', icon: User, description: 'Shop & track orders' },
-  { role: 'merchant', label: 'Merchant', icon: Store, description: 'Sell products' },
-];
+// SECURITY: Role selection removed - all signups are 'user' role only
+// Admin/Merchant promotion is done by admins through the dashboard
 
 export const SignupForm = ({ onSuccess, onSwitchToLogin }: SignupFormProps) => {
   const { signUp } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<AppRole>('user');
 
   const {
     register,
@@ -63,7 +60,8 @@ export const SignupForm = ({ onSuccess, onSwitchToLogin }: SignupFormProps) => {
 
   const onSubmit = async (data: SignupFormData) => {
     setIsLoading(true);
-    const { error } = await signUp(data.email, data.password, selectedRole, data.fullName);
+    // SECURITY: Always pass 'user' role - server ignores this anyway
+    const { error } = await signUp(data.email, data.password, 'user', data.fullName);
 
     if (error) {
       setIsLoading(false);
@@ -129,45 +127,7 @@ export const SignupForm = ({ onSuccess, onSwitchToLogin }: SignupFormProps) => {
       onSubmit={handleSubmit(onSubmit)}
       className="space-y-5"
     >
-      {/* Role Selection */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-muted-foreground">Account Type</label>
-        <div className="grid grid-cols-3 gap-2">
-          {roleOptions.map(({ role, label, icon: Icon, description }) => (
-            <motion.button
-              key={role}
-              type="button"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setSelectedRole(role)}
-              className={`relative p-3 rounded-xl border-2 transition-all text-center ${
-                selectedRole === role
-                  ? 'border-gold bg-gold/10'
-                  : 'border-border hover:border-gold/50'
-              }`}
-            >
-              <Icon className={`w-5 h-5 mx-auto mb-1 ${
-                selectedRole === role ? 'text-gold' : 'text-muted-foreground'
-              }`} />
-              <span className={`text-xs font-medium block ${
-                selectedRole === role ? 'text-foreground' : 'text-muted-foreground'
-              }`}>
-                {label}
-              </span>
-              {selectedRole === role && (
-                <motion.div
-                  layoutId="roleIndicator"
-                  className="absolute inset-0 rounded-xl border-2 border-gold"
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                />
-              )}
-            </motion.button>
-          ))}
-        </div>
-        <p className="text-xs text-muted-foreground text-center">
-          {roleOptions.find(r => r.role === selectedRole)?.description}
-        </p>
-      </div>
+      {/* SECURITY: Role selection removed - all signups are 'user' role */}
 
       <FloatingLabelInput
         label="Full Name"
@@ -242,7 +202,7 @@ export const SignupForm = ({ onSuccess, onSwitchToLogin }: SignupFormProps) => {
                 exit={{ opacity: 0, scale: 0.8 }}
                 className="flex items-center gap-2"
               >
-                Create {roleOptions.find(r => r.role === selectedRole)?.label} Account
+                Create Account
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </motion.span>
             )}
