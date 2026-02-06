@@ -106,14 +106,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, selectedRole: AppRole = 'user', fullName?: string) => {
+  // SECURITY: Role is always 'user' - only admins can promote users via dashboard
+  const signUp = async (email: string, password: string, _selectedRole: AppRole = 'user', fullName?: string) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: window.location.origin,
         data: {
-          role: selectedRole,
+          // SECURITY: Never pass role in metadata - trigger always assigns 'user'
           full_name: fullName || '',
         },
       },
