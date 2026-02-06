@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Shield, Sparkles } from "lucide-react";
 import { LoginForm } from "./LoginForm";
@@ -19,6 +19,18 @@ export const AuthModal = ({
   initialMode = "login",
 }: AuthModalProps) => {
   const [mode, setMode] = useState<"login" | "signup">(initialMode);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   const handleSuccess = () => {
     onSuccess();

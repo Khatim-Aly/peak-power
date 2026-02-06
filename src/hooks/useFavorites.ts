@@ -6,6 +6,12 @@ export interface Favorite {
   id: string;
   product_id: string;
   created_at: string;
+  product?: {
+    id: string;
+    name: string;
+    price: number;
+    image_url: string | null;
+  };
 }
 
 export const useFavorites = () => {
@@ -22,11 +28,14 @@ export const useFavorites = () => {
 
     const { data, error } = await supabase
       .from('favorites')
-      .select('*')
+      .select(`
+        *,
+        product:products (id, name, price, image_url)
+      `)
       .eq('user_id', user.id);
 
     if (!error && data) {
-      setFavorites(data);
+      setFavorites(data as Favorite[]);
     }
     setIsLoading(false);
   }, [user]);
