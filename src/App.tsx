@@ -13,6 +13,18 @@ import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import WhatsAppButton from "./components/WhatsAppButton";
 
+// Dashboard sub-pages
+import {
+  DashboardUsers,
+  DashboardMerchants,
+  DashboardOrders,
+  DashboardAnalytics,
+  DashboardSettings,
+  DashboardFavorites,
+  DashboardProfile,
+  DashboardProducts,
+} from "./pages/dashboard";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -29,7 +41,14 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/dashboard/*" element={<Dashboard />} />
+            <Route path="/dashboard/users" element={<DashboardUsers />} />
+            <Route path="/dashboard/merchants" element={<DashboardMerchants />} />
+            <Route path="/dashboard/orders" element={<DashboardOrders />} />
+            <Route path="/dashboard/analytics" element={<DashboardAnalytics />} />
+            <Route path="/dashboard/settings" element={<DashboardSettings />} />
+            <Route path="/dashboard/favorites" element={<DashboardFavorites />} />
+            <Route path="/dashboard/profile" element={<DashboardProfile />} />
+            <Route path="/dashboard/products" element={<DashboardProducts />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
