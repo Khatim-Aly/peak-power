@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, ArrowRight, Shield } from "lucide-react";
+import { Loader2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FloatingLabelInput } from "./FloatingLabelInput";
 import { useAuth } from "@/contexts/AuthContext";
@@ -29,7 +29,7 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [cooldown, setCooldown] = useState(false);
-  const [isAdminMode, setIsAdminMode] = useState(false);
+  
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
 
@@ -60,20 +60,6 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
     resolver: zodResolver(loginSchema),
   });
 
-  const handleAdminLogin = async () => {
-    setIsAdminMode(true);
-    // Set values with animation effect
-    setValue("email", "khatimaly@gmail.com", { shouldValidate: true, shouldDirty: true, shouldTouch: true });
-    setValue("password", "123213@123213", { shouldValidate: true, shouldDirty: true, shouldTouch: true });
-    
-    // Trigger validation to update UI
-    await trigger();
-    
-    toast({
-      title: "Admin credentials ready",
-      description: "Click Sign In to continue",
-    });
-  };
 
   const onSubmit = async (data: LoginFormData) => {
     if (cooldown) return;
@@ -222,22 +208,6 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
       </motion.div>
 
       {/* Admin Login Button */}
-      <motion.button
-        type="button"
-        onClick={handleAdminLogin}
-        whileHover={{ scale: 1.02, y: -2 }}
-        whileTap={{ scale: 0.98 }}
-        animate={isAdminMode ? { 
-          borderColor: "hsl(var(--gold))",
-          backgroundColor: "hsl(var(--gold) / 0.1)"
-        } : {}}
-        className="w-full flex items-center justify-center gap-2 h-10 rounded-xl border border-gold/30 hover:border-gold hover:bg-gold/5 text-muted-foreground hover:text-gold transition-all duration-300"
-      >
-        <Shield className="w-4 h-4" />
-        <span className="text-sm font-medium">
-          {isAdminMode ? "Admin Credentials Filled ✓" : "Login as Admin"}
-        </span>
-      </motion.button>
 
       {/* Social Login */}
       <div className="relative">

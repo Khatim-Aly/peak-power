@@ -5,10 +5,10 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 }
 
-// Default admin credentials - hardcoded for initial bootstrap only
-const DEFAULT_ADMIN_EMAIL = 'khatimaly@gmail.com'
-const DEFAULT_ADMIN_PASSWORD = '123213@123213'
-const DEFAULT_ADMIN_NAME = 'Admin'
+// Admin credentials from environment variables - never hardcode secrets
+const DEFAULT_ADMIN_EMAIL = Deno.env.get('ADMIN_EMAIL')
+const DEFAULT_ADMIN_PASSWORD = Deno.env.get('ADMIN_PASSWORD')
+const DEFAULT_ADMIN_NAME = Deno.env.get('ADMIN_NAME') || 'Admin'
 
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
@@ -17,6 +17,13 @@ Deno.serve(async (req) => {
   }
 
   try {
+    if (!DEFAULT_ADMIN_EMAIL || !DEFAULT_ADMIN_PASSWORD) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'ADMIN_EMAIL and ADMIN_PASSWORD environment variables are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
