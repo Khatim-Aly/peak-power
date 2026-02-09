@@ -56,11 +56,11 @@ export const AuthModal = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
           >
-            <div className="relative w-full max-w-md">
+            <div className="relative w-full max-w-md my-auto">
               {/* Glassmorphism Card */}
-              <div className="relative overflow-hidden rounded-3xl border border-border/50 bg-card/80 backdrop-blur-xl shadow-2xl">
+              <div className="relative overflow-hidden rounded-3xl border border-border/50 bg-card/80 backdrop-blur-xl shadow-2xl max-h-[90vh] overflow-y-auto">
                 {/* Animated Background */}
                 <AnimatedBackground />
 
