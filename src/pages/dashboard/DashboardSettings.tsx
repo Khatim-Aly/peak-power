@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { 
-  Settings, 
   User, 
   Bell, 
   Shield, 
@@ -15,9 +14,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import SecuritySettings from "@/components/settings/SecuritySettings";
+import NotificationSettings from "@/components/settings/NotificationSettings";
+import AppearanceSettings from "@/components/settings/AppearanceSettings";
 
 const DashboardSettings = () => {
   const { profile, user } = useAuth();
@@ -29,13 +30,6 @@ const DashboardSettings = () => {
     address: profile?.address || '',
     city: profile?.city || '',
     postal_code: profile?.postal_code || '',
-  });
-
-  const [notifications, setNotifications] = useState({
-    email_orders: true,
-    email_promotions: false,
-    push_orders: true,
-    push_updates: true,
   });
 
   const handleSaveProfile = async () => {
@@ -173,132 +167,16 @@ const DashboardSettings = () => {
             </motion.div>
           </TabsContent>
 
-          {/* Notifications Settings */}
           <TabsContent value="notifications">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-card rounded-2xl border border-border p-6"
-            >
-              <h3 className="text-lg font-serif font-bold mb-6">Notification Preferences</h3>
-              
-              <div className="space-y-6">
-                <div>
-                  <h4 className="font-medium mb-4">Email Notifications</h4>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">Order Updates</p>
-                        <p className="text-sm text-muted-foreground">Get notified about order status changes</p>
-                      </div>
-                      <Switch
-                        checked={notifications.email_orders}
-                        onCheckedChange={(checked) => setNotifications({ ...notifications, email_orders: checked })}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">Promotions</p>
-                        <p className="text-sm text-muted-foreground">Receive promotional emails and offers</p>
-                      </div>
-                      <Switch
-                        checked={notifications.email_promotions}
-                        onCheckedChange={(checked) => setNotifications({ ...notifications, email_promotions: checked })}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-t border-border pt-6">
-                  <h4 className="font-medium mb-4">Push Notifications</h4>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">Order Alerts</p>
-                        <p className="text-sm text-muted-foreground">Push notifications for order updates</p>
-                      </div>
-                      <Switch
-                        checked={notifications.push_orders}
-                        onCheckedChange={(checked) => setNotifications({ ...notifications, push_orders: checked })}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">System Updates</p>
-                        <p className="text-sm text-muted-foreground">Get notified about new features</p>
-                      </div>
-                      <Switch
-                        checked={notifications.push_updates}
-                        onCheckedChange={(checked) => setNotifications({ ...notifications, push_updates: checked })}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+            <NotificationSettings />
           </TabsContent>
 
-          {/* Security Settings */}
           <TabsContent value="security">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-card rounded-2xl border border-border p-6"
-            >
-              <h3 className="text-lg font-serif font-bold mb-6">Security Settings</h3>
-              
-              <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-muted/30 rounded-xl">
-                  <div>
-                    <p className="font-medium">Two-Factor Authentication</p>
-                    <p className="text-sm text-muted-foreground">Add an extra layer of security</p>
-                  </div>
-                  <Button variant="outline">Enable</Button>
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-muted/30 rounded-xl">
-                  <div>
-                    <p className="font-medium">Change Password</p>
-                    <p className="text-sm text-muted-foreground">Update your account password</p>
-                  </div>
-                  <Button variant="outline">Change</Button>
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-muted/30 rounded-xl">
-                  <div>
-                    <p className="font-medium">Active Sessions</p>
-                    <p className="text-sm text-muted-foreground">Manage your active sessions</p>
-                  </div>
-                  <Button variant="outline">View</Button>
-                </div>
-              </div>
-            </motion.div>
+            <SecuritySettings />
           </TabsContent>
 
-          {/* Appearance Settings */}
           <TabsContent value="appearance">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-card rounded-2xl border border-border p-6"
-            >
-              <h3 className="text-lg font-serif font-bold mb-6">Appearance Settings</h3>
-              
-              <div className="space-y-6">
-                <div>
-                  <h4 className="font-medium mb-4">Theme</h4>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    You can toggle the theme using the button in the navigation bar
-                  </p>
-                  <div className="flex gap-4">
-                    <div className="flex-1 p-4 bg-background border-2 border-gold rounded-xl text-center">
-                      <div className="w-full h-20 bg-gradient-to-br from-background to-muted rounded-lg mb-2" />
-                      <p className="text-sm font-medium">Current Theme</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+            <AppearanceSettings />
           </TabsContent>
         </Tabs>
       </div>
