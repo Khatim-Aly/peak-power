@@ -7,8 +7,6 @@ import {
   Clock,
   CheckCircle,
   Truck,
-  MapPin,
-  Phone,
   User,
   ChevronDown,
   ChevronUp
@@ -33,22 +31,17 @@ interface Order {
   order_number: string;
   status: string;
   total_amount: number;
-  shipping_address: string;
-  shipping_city: string;
-  shipping_phone: string;
   created_at: string;
+  updated_at: string;
   user_id: string;
+  notes: string | null;
   order_items: {
     product_name: string;
     product_image: string;
     quantity: number;
     price: number;
   }[];
-  profiles?: {
-    full_name: string;
-    email: string;
-    phone: string;
-  };
+  customer_name: string | null;
 }
 
 const statusOptions = [
@@ -72,14 +65,7 @@ export const MerchantDashboard = () => {
   }, []);
 
   const fetchOrders = async () => {
-    const { data, error } = await supabase
-      .from('orders')
-      .select(`
-        *,
-        order_items (*),
-        profiles:user_id (full_name, email, phone)
-      `)
-      .order('created_at', { ascending: false });
+    const { data, error } = await supabase.rpc('get_merchant_orders');
 
     if (!error && data) {
       setOrders(data as unknown as Order[]);
@@ -263,27 +249,11 @@ export const MerchantDashboard = () => {
                         {/* Customer Info */}
                         <div>
                           <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
-                            <User className="w-4 h-4" /> Customer Details
-                          </h4>
-                          <div className="grid md:grid-cols-2 gap-2 text-sm text-muted-foreground">
-                            <p>{order.profiles?.full_name || 'N/A'}</p>
-                            <p>{order.profiles?.email || 'N/A'}</p>
-                          </div>
-                        </div>
-
-                        {/* Shipping Info */}
-                        <div>
-                          <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
-                            <MapPin className="w-4 h-4" /> Shipping Address
+                            <User className="w-4 h-4" /> Customer
                           </h4>
                           <p className="text-sm text-muted-foreground">
-                            {order.shipping_address}, {order.shipping_city}
+                            {order.customer_name || 'N/A'}
                           </p>
-                          {order.shipping_phone && (
-                            <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                              <Phone className="w-3 h-3" /> {order.shipping_phone}
-                            </p>
-                          )}
                         </div>
 
                         {/* Order Items */}
