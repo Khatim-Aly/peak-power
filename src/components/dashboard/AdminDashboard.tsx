@@ -17,6 +17,7 @@ import {
   Plus
 } from "lucide-react";
 import { DashboardLayout } from "./DashboardLayout";
+import { ShippingFeesManager } from "./ShippingFeesManager";
 import { UserEditModal } from "./UserEditModal";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -275,6 +276,11 @@ export const AdminDashboard = () => {
             </>
           )}
         </Tabs>
+      </div>
+
+      {/* Shipping Fees Manager */}
+      <div className="mt-8">
+        <ShippingFeesManager />
       </div>
 
       {/* Edit User Modal */}

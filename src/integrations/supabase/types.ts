@@ -324,6 +324,30 @@ export type Database = {
         }
         Relationships: []
       }
+      shipping_fees: {
+        Row: {
+          city: string
+          created_at: string
+          fee: number
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          city: string
+          created_at?: string
+          fee?: number
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          fee?: number
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
