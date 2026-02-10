@@ -6,6 +6,8 @@ import { Button } from "./ui/button";
 import ThemeToggle from "./ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "./auth/AuthModal";
+import CartDrawer from "./CartDrawer";
+import { useCart } from "@/hooks/useCart";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +19,8 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showCart, setShowCart] = useState(false);
+  const { totalItems } = useCart();
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut, isLoading } = useAuth();
@@ -166,9 +170,14 @@ const Navigation = () => {
               )
             )}
             
-            <Button variant="glow" size="default" onClick={() => handleNavClick("/product")}>
+            <Button variant="glow" size="default" onClick={() => setShowCart(true)} className="relative">
               <ShoppingBag className="w-4 h-4 mr-2" />
               Shop Now
+              {totalItems > 0 && (
+                <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-xs flex items-center justify-center font-bold">
+                  {totalItems}
+                </span>
+              )}
             </Button>
           </div>
 
@@ -289,14 +298,19 @@ const Navigation = () => {
               >
                 <Button 
                   variant="glow" 
-                  className="w-full"
+                  className="w-full relative"
                   onClick={() => {
-                    handleNavClick("/product");
+                    setShowCart(true);
                     setIsOpen(false);
                   }}
                 >
                   <ShoppingBag className="w-4 h-4 mr-2" />
                   Shop Now
+                  {totalItems > 0 && (
+                    <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-xs flex items-center justify-center font-bold">
+                      {totalItems}
+                    </span>
+                  )}
                 </Button>
               </motion.div>
             </div>
@@ -310,6 +324,9 @@ const Navigation = () => {
         onClose={() => setShowAuthModal(false)}
         onSuccess={() => setShowAuthModal(false)}
       />
+
+      {/* Cart Drawer */}
+      <CartDrawer isOpen={showCart} onClose={() => setShowCart(false)} />
     </motion.nav>
   );
 };

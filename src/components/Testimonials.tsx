@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import AnimatedCounter from "./AnimatedCounter";
 import { Star, ChevronLeft, ChevronRight, Quote } from "lucide-react";
 
 interface Testimonial {
@@ -119,9 +120,9 @@ const Testimonials = () => {
           className="flex justify-center gap-12 mb-16 flex-wrap"
         >
           {[
-            { value: "4.9", label: "Average Rating" },
-            { value: "2,847", label: "Happy Customers" },
-            { value: "98%", label: "Would Recommend" },
+            { value: "4.9", label: "Average Rating", isCounter: false },
+            { value: "1289", label: "Happy Customers", isCounter: true },
+            { value: "98%", label: "Would Recommend", isCounter: false },
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
@@ -131,7 +132,13 @@ const Testimonials = () => {
               transition={{ delay: 0.3 + index * 0.1 }}
               className="text-center"
             >
-              <div className="text-4xl md:text-5xl font-bold text-gold mb-2">{stat.value}</div>
+              <div className="text-4xl md:text-5xl font-bold text-gold mb-2">
+                {stat.isCounter ? (
+                  <AnimatedCounter start={1289} end={2847} duration={2.5} suffix="+" />
+                ) : (
+                  stat.value
+                )}
+              </div>
               <div className="text-secondary-foreground/60 text-sm">{stat.label}</div>
             </motion.div>
           ))}
