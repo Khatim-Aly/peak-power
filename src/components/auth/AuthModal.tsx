@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Shield, Sparkles } from "lucide-react";
 import { LoginForm } from "./LoginForm";
@@ -37,7 +38,7 @@ export const AuthModal = ({
     onClose();
   };
 
-  return (
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
         <>
@@ -47,7 +48,7 @@ export const AuthModal = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-background/80 backdrop-blur-md z-50"
+            className="fixed inset-0 bg-background/80 backdrop-blur-md z-[9998]"
           />
 
           {/* Modal */}
@@ -56,7 +57,7 @@ export const AuthModal = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 overflow-y-auto"
           >
             <div className="relative w-full max-w-md my-auto">
               {/* Glassmorphism Card */}
@@ -69,7 +70,7 @@ export const AuthModal = ({
                   whileHover={{ scale: 1.1, rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={onClose}
-                  className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-muted/50 backdrop-blur-sm flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-muted/80 backdrop-blur-sm flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </motion.button>
@@ -181,4 +182,6 @@ export const AuthModal = ({
       )}
     </AnimatePresence>
   );
+
+  return createPortal(modalContent, document.body);
 };
