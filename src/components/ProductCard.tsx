@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import ProductGallery from "./ProductGallery";
 import { AuthModal } from "./auth/AuthModal";
 import { useProtectedAction } from "@/hooks/useProtectedAction";
-import { useCart } from "@/hooks/useCart";
+import { useCartContext } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 
 interface ProductVariant {
@@ -28,7 +28,7 @@ const ProductCard = () => {
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [dbProducts, setDbProducts] = useState<Record<string, string>>({});
-  const { addToCart } = useCart();
+  const { addToCart, setIsCartOpen } = useCartContext();
   
   const { 
     showAuthModal, 
@@ -98,6 +98,7 @@ const ProductCard = () => {
         title: "Added to Cart! 🎉",
         description: `${quantity}x ${currentVariant.size} Pure Himalayan Shilajit`,
       });
+      setIsCartOpen(true);
     }
   };
 
