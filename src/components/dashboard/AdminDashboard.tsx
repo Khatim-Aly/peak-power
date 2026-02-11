@@ -146,7 +146,7 @@ export const AdminDashboard = () => {
     { label: 'Total Users', value: users.length, icon: Users, color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
     { label: 'Merchants', value: merchants.length, icon: Store, color: 'text-purple-500', bgColor: 'bg-purple-500/10' },
     { label: 'Total Orders', value: orders.length, icon: Package, color: 'text-amber-500', bgColor: 'bg-amber-500/10' },
-    { label: 'Revenue', value: `£${totalRevenue.toFixed(0)}`, icon: DollarSign, color: 'text-green-500', bgColor: 'bg-green-500/10' },
+    { label: 'Revenue', value: `PKR ${totalRevenue.toFixed(0)}`, icon: DollarSign, color: 'text-green-500', bgColor: 'bg-green-500/10' },
   ];
 
   const getRoleBadge = (role: string) => {
@@ -432,7 +432,7 @@ const OrdersTable = ({ orders }: { orders: any[] }) => {
           {orders.slice(0, 20).map((order) => (
             <TableRow key={order.id}>
               <TableCell className="font-medium">{order.order_number}</TableCell>
-              <TableCell>£{Number(order.total_amount).toFixed(2)}</TableCell>
+              <TableCell>PKR {Number(order.total_amount).toFixed(2)}</TableCell>
               <TableCell>
                 <Badge 
                   variant="secondary" 

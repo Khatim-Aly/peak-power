@@ -121,7 +121,7 @@ const DashboardOrders = () => {
     { label: 'Total Orders', value: orders.length, icon: Package, color: 'text-gold', bgColor: 'bg-gold/10' },
     { label: 'Pending', value: pendingOrders.length, icon: Clock, color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
     { label: 'In Transit', value: inTransitOrders.length, icon: Truck, color: 'text-amber-500', bgColor: 'bg-amber-500/10' },
-    { label: 'Revenue', value: `£${totalRevenue.toFixed(0)}`, icon: DollarSign, color: 'text-green-500', bgColor: 'bg-green-500/10' },
+    { label: 'Revenue', value: `PKR ${totalRevenue.toFixed(0)}`, icon: DollarSign, color: 'text-green-500', bgColor: 'bg-green-500/10' },
   ];
 
   const canEditStatus = role === 'admin' || role === 'merchant';
@@ -179,7 +179,7 @@ const DashboardOrders = () => {
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {order.order_items?.length || 0} items • £{Number(order.total_amount).toFixed(2)}
+                      {order.order_items?.length || 0} items • PKR {Number(order.total_amount).toFixed(2)}
                     </p>
                   </div>
 
@@ -263,7 +263,7 @@ const DashboardOrders = () => {
                             <div className="flex-1">
                               <p>{item.product_name}</p>
                               <p className="text-muted-foreground">
-                                Qty: {item.quantity} × £{Number(item.price).toFixed(2)}
+                                Qty: {item.quantity} × PKR {Number(item.price).toFixed(2)}
                               </p>
                             </div>
                           </div>

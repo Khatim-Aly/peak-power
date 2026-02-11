@@ -69,10 +69,10 @@ const StickyBuyButton = ({ price = 2800, originalPrice = 4000 }: StickyBuyButton
             <div className="flex items-center justify-between gap-4 max-w-lg mx-auto">
               <div className="flex flex-col">
                 <span className="text-xs text-muted-foreground line-through">
-                  Rs. {originalPrice.toLocaleString()}
+                  PKR {originalPrice.toLocaleString()}
                 </span>
                 <span className="text-xl font-bold text-gradient-gold">
-                  Rs. {price.toLocaleString()}
+                  PKR {price.toLocaleString()}
                 </span>
               </div>
               <Button 

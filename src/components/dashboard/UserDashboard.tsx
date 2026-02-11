@@ -251,7 +251,7 @@ const OrdersList = ({ orders, isLoading, emptyMessage }: OrdersListProps) => {
               <p className="font-medium truncate">{order.order_number}</p>
               <p className="text-sm text-muted-foreground">
                 {order.items?.length || 0} item{order.items?.length !== 1 ? 's' : ''} • 
-                £{order.total_amount.toFixed(2)}
+                PKR {order.total_amount.toFixed(2)}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 {new Date(order.created_at).toLocaleDateString('en-GB', { 

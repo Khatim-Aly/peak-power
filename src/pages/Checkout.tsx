@@ -263,10 +263,10 @@ const Checkout = () => {
                           <p className="text-sm text-muted-foreground">{item.size}</p>
                           <div className="flex items-center gap-2 mt-2">
                             <span className="font-bold text-gold">
-                              Rs. {item.price.toLocaleString()}
+                              PKR {item.price.toLocaleString()}
                             </span>
                             <span className="text-sm text-muted-foreground line-through">
-                              Rs. {item.originalPrice.toLocaleString()}
+                              PKR {item.originalPrice.toLocaleString()}
                             </span>
                           </div>
                         </div>
@@ -379,7 +379,7 @@ const Checkout = () => {
                               <SelectContent>
                                 {shippingFees.map((sf) => (
                                   <SelectItem key={sf.id} value={sf.city}>
-                                    {sf.city} — Rs. {sf.fee.toLocaleString()} shipping
+                                    {sf.city} — PKR {sf.fee.toLocaleString()} shipping
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -600,7 +600,7 @@ const Checkout = () => {
                         <p className="font-medium text-sm">{item.name}</p>
                         <p className="text-xs text-muted-foreground">{item.size}</p>
                         <p className="text-sm font-semibold mt-1">
-                          {item.quantity} × Rs. {item.price.toLocaleString()}
+                          {item.quantity} × PKR {item.price.toLocaleString()}
                         </p>
                       </div>
                     </div>
@@ -609,12 +609,12 @@ const Checkout = () => {
                   <div className="space-y-3 mb-4">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Subtotal</span>
-                      <span>Rs. {subtotal.toLocaleString()}</span>
+                      <span>PKR {subtotal.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Shipping</span>
                       {shipping > 0 ? (
-                        <span className="font-semibold">Rs. {shipping.toLocaleString()}</span>
+                        <span className="font-semibold">PKR {shipping.toLocaleString()}</span>
                       ) : shippingInfo.city ? (
                         <span className="text-gold font-semibold">FREE</span>
                       ) : (
@@ -623,7 +623,7 @@ const Checkout = () => {
                     </div>
                     <div className="flex justify-between text-sm text-gold">
                       <span>You Save</span>
-                      <span>Rs. {totalSavings.toLocaleString()}</span>
+                      <span>PKR {totalSavings.toLocaleString()}</span>
                     </div>
                   </div>
 
@@ -631,7 +631,7 @@ const Checkout = () => {
                     <div className="flex justify-between items-center">
                       <span className="font-semibold">Total</span>
                       <span className="text-2xl font-bold text-gradient-gold">
-                        Rs. {total.toLocaleString()}
+                        PKR {total.toLocaleString()}
                       </span>
                     </div>
                   </div>

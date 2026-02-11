@@ -93,7 +93,7 @@ const DashboardProducts = () => {
   const stats = [
     { label: 'Total Products', value: products.length, icon: Package, color: 'text-gold', bgColor: 'bg-gold/10' },
     { label: 'Active', value: activeProducts, icon: Eye, color: 'text-green-500', bgColor: 'bg-green-500/10' },
-    { label: 'Inventory Value', value: `£${totalValue.toFixed(0)}`, icon: DollarSign, color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
+    { label: 'Inventory Value', value: `PKR ${totalValue.toFixed(0)}`, icon: DollarSign, color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
   ];
 
   return (
@@ -193,10 +193,10 @@ const DashboardProducts = () => {
                     </TableCell>
                     <TableCell>
                       <div>
-                        <p className="font-medium">£{product.price.toFixed(2)}</p>
+                        <p className="font-medium">PKR {product.price.toFixed(2)}</p>
                         {product.original_price && (
                           <p className="text-sm text-muted-foreground line-through">
-                            £{product.original_price.toFixed(2)}
+                            PKR {product.original_price.toFixed(2)}
                           </p>
                         )}
                       </div>

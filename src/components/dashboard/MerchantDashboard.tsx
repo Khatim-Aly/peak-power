@@ -202,7 +202,7 @@ export const MerchantDashboard = () => {
                           </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          {order.order_items?.length || 0} items • £{Number(order.total_amount).toFixed(2)}
+                          {order.order_items?.length || 0} items • PKR {Number(order.total_amount).toFixed(2)}
                         </p>
                       </div>
 
@@ -274,7 +274,7 @@ export const MerchantDashboard = () => {
                                 <div className="flex-1">
                                   <p>{item.product_name}</p>
                                   <p className="text-muted-foreground">
-                                    Qty: {item.quantity} × £{Number(item.price).toFixed(2)}
+                                    Qty: {item.quantity} × PKR {Number(item.price).toFixed(2)}
                                   </p>
                                 </div>
                               </div>
