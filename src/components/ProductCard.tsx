@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Star, Minus, Plus, ShoppingCart } from "lucide-react";
 import { Button } from "./ui/button";
@@ -7,9 +7,12 @@ import { useNavigate } from "react-router-dom";
 import ProductGallery from "./ProductGallery";
 import { AuthModal } from "./auth/AuthModal";
 import { useProtectedAction } from "@/hooks/useProtectedAction";
+import { useCart } from "@/hooks/useCart";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProductVariant {
   id: string;
+  productId: string;
   size: string;
   originalPrice: number;
   discount: number;
@@ -24,6 +27,8 @@ const ProductCard = () => {
   const [selectedVariant, setSelectedVariant] = useState<string>("20g");
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [dbProducts, setDbProducts] = useState<Record<string, string>>({});
+  const { addToCart } = useCart();
   
   const { 
     showAuthModal, 
@@ -32,9 +37,28 @@ const ProductCard = () => {
     executePendingAction 
   } = useProtectedAction();
 
+  // Fetch product IDs from DB
+  useEffect(() => {
+    supabase
+      .from('products')
+      .select('id, name')
+      .eq('is_active', true)
+      .then(({ data }) => {
+        if (data) {
+          const map: Record<string, string> = {};
+          data.forEach(p => {
+            if (p.name.includes('10g')) map['10g'] = p.id;
+            if (p.name.includes('20g')) map['20g'] = p.id;
+          });
+          setDbProducts(map);
+        }
+      });
+  }, []);
+
   const variants: ProductVariant[] = [
     {
       id: "10g",
+      productId: dbProducts['10g'] || '',
       size: "10 Grams",
       originalPrice: 2000,
       discount: 20,
@@ -43,6 +67,7 @@ const ProductCard = () => {
     },
     {
       id: "20g",
+      productId: dbProducts['20g'] || '',
       size: "20 Grams",
       originalPrice: 4000,
       discount: 30,
@@ -58,14 +83,22 @@ const ProductCard = () => {
   const totalSavings = savings * quantity;
 
   const performAddToCart = async () => {
+    if (!currentVariant.productId) {
+      toast({ title: "Error", description: "Product not found", variant: "destructive" });
+      return;
+    }
     setIsAddingToCart(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const { error } = await addToCart(currentVariant.productId, quantity, currentVariant.id);
     setIsAddingToCart(false);
     
-    toast({
-      title: "Added to Cart! 🎉",
-      description: `${quantity}x ${currentVariant.size} Pure Himalayan Shilajit`,
-    });
+    if (error) {
+      toast({ title: "Error", description: "Failed to add to cart", variant: "destructive" });
+    } else {
+      toast({
+        title: "Added to Cart! 🎉",
+        description: `${quantity}x ${currentVariant.size} Pure Himalayan Shilajit`,
+      });
+    }
   };
 
   const performBuyNow = () => {

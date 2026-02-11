@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ShoppingBag, Plus, Minus, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
@@ -56,7 +57,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
@@ -66,7 +67,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[9998]"
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[99998]"
           />
 
           {/* Drawer */}
@@ -75,7 +76,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-full w-full max-w-md bg-card border-l border-border shadow-2xl z-[9999] flex flex-col"
+            className="fixed right-0 top-0 h-full w-full max-w-md bg-card border-l border-border shadow-2xl z-[99999] flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-border">
@@ -180,7 +181,8 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 
