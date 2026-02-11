@@ -70,7 +70,7 @@ const DashboardFavorites = () => {
               <div className="p-4">
                 <h3 className="font-medium mb-1">{favorite.product?.name || 'Product'}</h3>
                 <p className="text-gold font-bold text-lg">
-                  £{favorite.product?.price?.toFixed(2) || '0.00'}
+                  PKR {favorite.product?.price?.toFixed(2) || '0.00'}
                 </p>
                 <div className="flex gap-2 mt-4">
                   <Link to="/product" className="flex-1">

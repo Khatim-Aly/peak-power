@@ -91,7 +91,7 @@ const DashboardAnalytics = () => {
   const stats = [
     { 
       label: 'Total Revenue', 
-      value: `£${totalRevenue.toFixed(0)}`, 
+      value: `PKR ${totalRevenue.toFixed(0)}`, 
       icon: DollarSign, 
       color: 'text-green-500',
       bgColor: 'bg-green-500/10',
@@ -109,7 +109,7 @@ const DashboardAnalytics = () => {
     },
     { 
       label: 'Avg Order Value', 
-      value: `£${averageOrderValue.toFixed(0)}`, 
+      value: `PKR ${averageOrderValue.toFixed(0)}`, 
       icon: ShoppingBag, 
       color: 'text-blue-500',
       bgColor: 'bg-blue-500/10',

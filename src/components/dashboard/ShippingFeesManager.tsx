@@ -56,7 +56,7 @@ export const ShippingFeesManager = () => {
       return;
     }
 
-    toast({ title: "Shipping fee saved", description: `Fee for ${newCity} set to £${newFee}` });
+    toast({ title: "Shipping fee saved", description: `Fee for ${newCity} set to PKR ${newFee}` });
     setNewCity("");
     setNewFee("");
     fetchFees();
@@ -114,7 +114,7 @@ export const ShippingFeesManager = () => {
             className="flex-1"
           />
           <Input
-            placeholder="Fee (£)"
+            placeholder="Fee (PKR)"
             type="number"
             step="0.01"
             min="0"
@@ -143,7 +143,7 @@ export const ShippingFeesManager = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>City</TableHead>
-                <TableHead>Fee (£)</TableHead>
+                <TableHead>Fee (PKR)</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -197,7 +197,7 @@ const FeeRow = ({
             className="cursor-pointer hover:text-gold transition-colors"
             onClick={() => { setEditing(true); setEditValue(fee.fee.toString()); }}
           >
-            £{fee.fee.toFixed(2)}
+            PKR {fee.fee.toFixed(2)}
           </span>
         )}
       </TableCell>

@@ -137,7 +137,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm truncate">{product?.name || 'Product'}</p>
-                        <p className="text-gold font-bold text-sm">£{product ? (product.price * item.quantity).toFixed(2) : '—'}</p>
+                        <p className="text-gold font-bold text-sm">PKR {product ? (product.price * item.quantity).toFixed(2) : '—'}</p>
                         <div className="flex items-center gap-2 mt-1">
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
@@ -171,7 +171,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
               <div className="p-6 border-t border-border space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span className="text-xl font-bold text-gold">£{total.toFixed(2)}</span>
+                  <span className="text-xl font-bold text-gold">PKR {total.toFixed(2)}</span>
                 </div>
                 <Button variant="hero" className="w-full" size="lg" asChild onClick={onClose}>
                   <Link to="/checkout">Proceed to Checkout</Link>

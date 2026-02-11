@@ -229,10 +229,10 @@ const ProductCard = () => {
 
                     <div className="mt-4 flex items-center gap-3">
                       <span className="text-2xl font-bold text-foreground">
-                        Rs. {variant.finalPrice.toLocaleString()}
+                        PKR {variant.finalPrice.toLocaleString()}
                       </span>
                       <span className="text-lg text-muted-foreground line-through">
-                        Rs. {variant.originalPrice.toLocaleString()}
+                        PKR {variant.originalPrice.toLocaleString()}
                       </span>
                       <span className="badge-discount text-xs">
                         {variant.discount}% OFF
@@ -281,7 +281,7 @@ const ProductCard = () => {
                 <div className="text-sm text-muted-foreground">
                   You save{" "}
                   <span className="text-gold font-semibold">
-                    Rs. {totalSavings.toLocaleString()}
+                    PKR {totalSavings.toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -291,7 +291,7 @@ const ProductCard = () => {
             <div className="glass-card p-6 rounded-2xl mb-8">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span className="font-semibold">Rs. {totalPrice.toLocaleString()}</span>
+                <span className="font-semibold">PKR {totalPrice.toLocaleString()}</span>
               </div>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-muted-foreground">Shipping</span>
@@ -301,7 +301,7 @@ const ProductCard = () => {
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-lg">Total</span>
                   <span className="text-2xl font-bold text-gradient-gold">
-                    Rs. {totalPrice.toLocaleString()}
+                    PKR {totalPrice.toLocaleString()}
                   </span>
                 </div>
               </div>
