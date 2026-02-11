@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ShoppingBag, 
@@ -19,7 +19,9 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import heroProduct from "@/assets/hero-product.jpg";
 
 type CheckoutStep = "cart" | "shipping" | "payment" | "confirmation";
@@ -45,12 +47,20 @@ interface ShippingInfo {
   country: string;
 }
 
+interface ShippingFee {
+  id: string;
+  city: string;
+  fee: number;
+}
+
 const Checkout = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState<CheckoutStep>("cart");
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderId, setOrderId] = useState("");
+  const [shippingFees, setShippingFees] = useState<ShippingFee[]>([]);
+  const [selectedShippingFee, setSelectedShippingFee] = useState<number>(0);
 
   const [cartItems, setCartItems] = useState<CartItem[]>([
     {
@@ -75,6 +85,29 @@ const Checkout = () => {
     country: "Pakistan",
   });
 
+  // Fetch shipping fees from DB
+  useEffect(() => {
+    supabase
+      .from('shipping_fees')
+      .select('*')
+      .order('city')
+      .then(({ data }) => {
+        if (data) setShippingFees(data);
+      });
+  }, []);
+
+  // Update shipping fee when city changes
+  useEffect(() => {
+    if (shippingInfo.city) {
+      const fee = shippingFees.find(
+        (f) => f.city.toLowerCase() === shippingInfo.city.toLowerCase()
+      );
+      setSelectedShippingFee(fee ? fee.fee : 0);
+    } else {
+      setSelectedShippingFee(0);
+    }
+  }, [shippingInfo.city, shippingFees]);
+
   const steps = [
     { id: "cart", label: "Cart", icon: ShoppingBag },
     { id: "shipping", label: "Shipping", icon: Truck },
@@ -83,7 +116,7 @@ const Checkout = () => {
   ];
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const shipping = 0; // Free shipping
+  const shipping = selectedShippingFee;
   const total = subtotal + shipping;
   const totalSavings = cartItems.reduce(
     (acc, item) => acc + (item.originalPrice - item.price) * item.quantity,
@@ -333,13 +366,33 @@ const Checkout = () => {
                             <Building className="w-4 h-4 text-gold" />
                             City *
                           </label>
-                          <Input
-                            name="city"
-                            value={shippingInfo.city}
-                            onChange={handleShippingChange}
-                            placeholder="Karachi"
-                            className="h-12 rounded-xl"
-                          />
+                          {shippingFees.length > 0 ? (
+                            <Select
+                              value={shippingInfo.city}
+                              onValueChange={(value) =>
+                                setShippingInfo((prev) => ({ ...prev, city: value }))
+                              }
+                            >
+                              <SelectTrigger className="h-12 rounded-xl">
+                                <SelectValue placeholder="Select your city" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {shippingFees.map((sf) => (
+                                  <SelectItem key={sf.id} value={sf.city}>
+                                    {sf.city} — Rs. {sf.fee.toLocaleString()} shipping
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <Input
+                              name="city"
+                              value={shippingInfo.city}
+                              onChange={handleShippingChange}
+                              placeholder="Karachi"
+                              className="h-12 rounded-xl"
+                            />
+                          )}
                         </div>
                         <div>
                           <label className="block text-sm font-medium mb-2 flex items-center gap-2">
@@ -560,7 +613,13 @@ const Checkout = () => {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Shipping</span>
-                      <span className="text-gold font-semibold">FREE</span>
+                      {shipping > 0 ? (
+                        <span className="font-semibold">Rs. {shipping.toLocaleString()}</span>
+                      ) : shippingInfo.city ? (
+                        <span className="text-gold font-semibold">FREE</span>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">Select city</span>
+                      )}
                     </div>
                     <div className="flex justify-between text-sm text-gold">
                       <span>You Save</span>
