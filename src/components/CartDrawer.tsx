@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ShoppingBag, Plus, Minus, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
-import { useCart } from "@/hooks/useCart";
+import { useCartContext } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
@@ -22,7 +22,7 @@ interface CartDrawerProps {
 
 const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
   const { user } = useAuth();
-  const { cartItems, updateQuantity, removeFromCart, isLoading } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, isLoading } = useCartContext();
   const [products, setProducts] = useState<Record<string, Product>>({});
 
   useEffect(() => {
