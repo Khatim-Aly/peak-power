@@ -12,6 +12,7 @@ import Contact from "./pages/Contact";
 import Checkout from "./pages/Checkout";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
+import ResetPassword from "./pages/ResetPassword";
 import WhatsAppButton from "./components/WhatsAppButton";
 
 // Dashboard sub-pages
