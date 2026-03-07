@@ -85,6 +85,28 @@ const Checkout = () => {
     country: "Pakistan",
   });
 
+  // Fetch product details for cart items
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (rawCartItems.length === 0) {
+        setCheckoutItems([]);
+        return;
+      }
+      const productIds = rawCartItems.map(i => i.product_id);
+      const { data: products } = await supabase
+        .from('products')
+        .select('id, name, price, original_price, image_url')
+        .in('id', productIds);
+
+      const items: CheckoutCartItem[] = rawCartItems.map(ci => ({
+        ...ci,
+        product: products?.find(p => p.id === ci.product_id) as ProductDetails | undefined,
+      }));
+      setCheckoutItems(items);
+    };
+    fetchProducts();
+  }, [rawCartItems]);
+
   // Fetch shipping fees from DB
   useEffect(() => {
     supabase
@@ -115,21 +137,17 @@ const Checkout = () => {
     { id: "confirmation", label: "Confirm", icon: CheckCircle },
   ];
 
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const subtotal = checkoutItems.reduce((acc, item) => acc + (item.product?.price || 0) * item.quantity, 0);
   const shipping = selectedShippingFee;
   const total = subtotal + shipping;
-  const totalSavings = cartItems.reduce(
-    (acc, item) => acc + (item.originalPrice - item.price) * item.quantity,
+  const totalSavings = checkoutItems.reduce(
+    (acc, item) => acc + ((item.product?.original_price || item.product?.price || 0) - (item.product?.price || 0)) * item.quantity,
     0
   );
 
   const updateQuantity = (id: string, newQuantity: number) => {
     if (newQuantity < 1) return;
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
+    updateCartQuantity(id, newQuantity);
   };
 
   const handleShippingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
