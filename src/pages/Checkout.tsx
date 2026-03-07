@@ -22,18 +22,26 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import heroProduct from "@/assets/hero-product.jpg";
+import { useCartContext } from "@/contexts/CartContext";
+import { useOrders } from "@/hooks/useOrders";
+import { useAuth } from "@/contexts/AuthContext";
 
 type CheckoutStep = "cart" | "shipping" | "payment" | "confirmation";
 
-interface CartItem {
+interface ProductDetails {
   id: string;
   name: string;
-  size: string;
   price: number;
-  originalPrice: number;
+  original_price: number | null;
+  image_url: string | null;
+}
+
+interface CheckoutCartItem {
+  id: string;
+  product_id: string;
   quantity: number;
-  image: string;
+  variant: string | null;
+  product?: ProductDetails;
 }
 
 interface ShippingInfo {
@@ -56,23 +64,15 @@ interface ShippingFee {
 const Checkout = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
+  const { cartItems: rawCartItems, clearCart, updateQuantity: updateCartQuantity } = useCartContext();
+  const { createOrder } = useOrders();
   const [currentStep, setCurrentStep] = useState<CheckoutStep>("cart");
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderId, setOrderId] = useState("");
   const [shippingFees, setShippingFees] = useState<ShippingFee[]>([]);
   const [selectedShippingFee, setSelectedShippingFee] = useState<number>(0);
-
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: "1",
-      name: "Pure Himalayan Shilajit",
-      size: "20 Grams",
-      price: 2800,
-      originalPrice: 4000,
-      quantity: 1,
-      image: heroProduct,
-    },
-  ]);
+  const [checkoutItems, setCheckoutItems] = useState<CheckoutCartItem[]>([]);
 
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
     fullName: "",
@@ -84,6 +84,28 @@ const Checkout = () => {
     zipCode: "",
     country: "Pakistan",
   });
+
+  // Fetch product details for cart items
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (rawCartItems.length === 0) {
+        setCheckoutItems([]);
+        return;
+      }
+      const productIds = rawCartItems.map(i => i.product_id);
+      const { data: products } = await supabase
+        .from('products')
+        .select('id, name, price, original_price, image_url')
+        .in('id', productIds);
+
+      const items: CheckoutCartItem[] = rawCartItems.map(ci => ({
+        ...ci,
+        product: products?.find(p => p.id === ci.product_id) as ProductDetails | undefined,
+      }));
+      setCheckoutItems(items);
+    };
+    fetchProducts();
+  }, [rawCartItems]);
 
   // Fetch shipping fees from DB
   useEffect(() => {
@@ -115,21 +137,17 @@ const Checkout = () => {
     { id: "confirmation", label: "Confirm", icon: CheckCircle },
   ];
 
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const subtotal = checkoutItems.reduce((acc, item) => acc + (item.product?.price || 0) * item.quantity, 0);
   const shipping = selectedShippingFee;
   const total = subtotal + shipping;
-  const totalSavings = cartItems.reduce(
-    (acc, item) => acc + (item.originalPrice - item.price) * item.quantity,
+  const totalSavings = checkoutItems.reduce(
+    (acc, item) => acc + ((item.product?.original_price || item.product?.price || 0) - (item.product?.price || 0)) * item.quantity,
     0
   );
 
   const updateQuantity = (id: string, newQuantity: number) => {
     if (newQuantity < 1) return;
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
+    updateCartQuantity(id, newQuantity);
   };
 
   const handleShippingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -163,19 +181,44 @@ const Checkout = () => {
   };
 
   const handlePlaceOrder = async () => {
+    if (!user) {
+      toast({ variant: "destructive", title: "Please sign in to place an order" });
+      return;
+    }
     setIsProcessing(true);
-    // Simulate payment processing
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    
-    // Generate order ID
-    const generatedOrderId = `SHJ-${Date.now().toString(36).toUpperCase()}`;
-    setOrderId(generatedOrderId);
+
+    const orderItems = checkoutItems.map(item => ({
+      product_name: item.product?.name || 'Unknown Product',
+      product_image: item.product?.image_url || null,
+      quantity: item.quantity,
+      price: item.product?.price || 0,
+      product_id: item.product_id,
+    }));
+
+    const result = await createOrder({
+      total_amount: total,
+      shipping_address: shippingInfo.address,
+      shipping_city: shippingInfo.city,
+      shipping_postal_code: shippingInfo.zipCode,
+      shipping_phone: shippingInfo.phone,
+      notes: shippingInfo.state ? `State: ${shippingInfo.state}` : undefined,
+      items: orderItems,
+    });
+
     setIsProcessing(false);
+
+    if (result.error) {
+      toast({ variant: "destructive", title: "Order failed", description: result.error.message });
+      return;
+    }
+
+    setOrderId(result.data?.order_number || result.data?.id || '');
+    await clearCart();
     setCurrentStep("confirmation");
-    
+
     toast({
       title: "Order Placed Successfully! 🎉",
-      description: `Your order ${generatedOrderId} has been confirmed.`,
+      description: `Your order has been confirmed.`,
     });
   };
 
@@ -251,23 +294,25 @@ const Checkout = () => {
                   >
                     <h2 className="text-2xl font-serif font-bold mb-6">Your Cart</h2>
                     
-                    {cartItems.map((item) => (
+                    {checkoutItems.map((item) => (
                       <div key={item.id} className="flex gap-4 p-4 rounded-xl bg-muted/30 mb-4">
                         <img
-                          src={item.image}
-                          alt={item.name}
+                          src={item.product?.image_url || '/placeholder.svg'}
+                          alt={item.product?.name || 'Product'}
                           className="w-24 h-24 rounded-xl object-cover"
                         />
                         <div className="flex-1">
-                          <h3 className="font-semibold">{item.name}</h3>
-                          <p className="text-sm text-muted-foreground">{item.size}</p>
+                          <h3 className="font-semibold">{item.product?.name}</h3>
+                          <p className="text-sm text-muted-foreground">{item.variant || ''}</p>
                           <div className="flex items-center gap-2 mt-2">
                             <span className="font-bold text-gold">
-                              PKR {item.price.toLocaleString()}
+                              PKR {(item.product?.price || 0).toLocaleString()}
                             </span>
-                            <span className="text-sm text-muted-foreground line-through">
-                              PKR {item.originalPrice.toLocaleString()}
-                            </span>
+                            {item.product?.original_price && item.product.original_price > item.product.price && (
+                              <span className="text-sm text-muted-foreground line-through">
+                                PKR {item.product.original_price.toLocaleString()}
+                              </span>
+                            )}
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -589,18 +634,18 @@ const Checkout = () => {
                 <div className="glass-card p-6 rounded-2xl sticky top-28">
                   <h3 className="text-lg font-serif font-bold mb-4">Order Summary</h3>
 
-                  {cartItems.map((item) => (
+                  {checkoutItems.map((item) => (
                     <div key={item.id} className="flex gap-3 mb-4 pb-4 border-b border-border">
                       <img
-                        src={item.image}
-                        alt={item.name}
+                        src={item.product?.image_url || '/placeholder.svg'}
+                        alt={item.product?.name || 'Product'}
                         className="w-16 h-16 rounded-lg object-cover"
                       />
                       <div className="flex-1">
-                        <p className="font-medium text-sm">{item.name}</p>
-                        <p className="text-xs text-muted-foreground">{item.size}</p>
+                        <p className="font-medium text-sm">{item.product?.name}</p>
+                        <p className="text-xs text-muted-foreground">{item.variant || ''}</p>
                         <p className="text-sm font-semibold mt-1">
-                          {item.quantity} × PKR {item.price.toLocaleString()}
+                          {item.quantity} × PKR {(item.product?.price || 0).toLocaleString()}
                         </p>
                       </div>
                     </div>

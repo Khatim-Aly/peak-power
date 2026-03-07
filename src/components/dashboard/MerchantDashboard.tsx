@@ -105,7 +105,7 @@ export const MerchantDashboard = () => {
     { label: 'Total Orders', value: orders.length, icon: Package, color: 'text-gold', bgColor: 'bg-gold/10' },
     { label: 'Pending', value: pendingOrders.length, icon: Clock, color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
     { label: 'In Transit', value: inTransitOrders.length, icon: Truck, color: 'text-amber-500', bgColor: 'bg-amber-500/10' },
-    { label: 'Revenue', value: `£${totalRevenue.toFixed(0)}`, icon: DollarSign, color: 'text-green-500', bgColor: 'bg-green-500/10' },
+    { label: 'Revenue', value: `PKR ${totalRevenue.toFixed(0)}`, icon: DollarSign, color: 'text-green-500', bgColor: 'bg-green-500/10' },
   ];
 
   return (

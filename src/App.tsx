@@ -12,6 +12,7 @@ import Contact from "./pages/Contact";
 import Checkout from "./pages/Checkout";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
+import ResetPassword from "./pages/ResetPassword";
 import WhatsAppButton from "./components/WhatsAppButton";
 
 // Dashboard sub-pages
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/users" element={<DashboardUsers />} />
             <Route path="/dashboard/merchants" element={<DashboardMerchants />} />
