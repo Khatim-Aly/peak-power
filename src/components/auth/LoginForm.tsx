@@ -167,6 +167,7 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
           type="button"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
+          onClick={() => setShowForgotPassword(true)}
           className="text-gold hover:text-gold/80 transition-colors"
         >
           Forgot password?
