@@ -64,23 +64,15 @@ interface ShippingFee {
 const Checkout = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
+  const { cartItems: rawCartItems, clearCart, updateQuantity: updateCartQuantity } = useCartContext();
+  const { createOrder } = useOrders();
   const [currentStep, setCurrentStep] = useState<CheckoutStep>("cart");
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderId, setOrderId] = useState("");
   const [shippingFees, setShippingFees] = useState<ShippingFee[]>([]);
   const [selectedShippingFee, setSelectedShippingFee] = useState<number>(0);
-
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: "1",
-      name: "Pure Himalayan Shilajit",
-      size: "20 Grams",
-      price: 2800,
-      originalPrice: 4000,
-      quantity: 1,
-      image: heroProduct,
-    },
-  ]);
+  const [checkoutItems, setCheckoutItems] = useState<CheckoutCartItem[]>([]);
 
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
     fullName: "",
