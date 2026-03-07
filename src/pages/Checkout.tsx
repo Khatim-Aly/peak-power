@@ -634,18 +634,18 @@ const Checkout = () => {
                 <div className="glass-card p-6 rounded-2xl sticky top-28">
                   <h3 className="text-lg font-serif font-bold mb-4">Order Summary</h3>
 
-                  {cartItems.map((item) => (
+                  {checkoutItems.map((item) => (
                     <div key={item.id} className="flex gap-3 mb-4 pb-4 border-b border-border">
                       <img
-                        src={item.image}
-                        alt={item.name}
+                        src={item.product?.image_url || '/placeholder.svg'}
+                        alt={item.product?.name || 'Product'}
                         className="w-16 h-16 rounded-lg object-cover"
                       />
                       <div className="flex-1">
-                        <p className="font-medium text-sm">{item.name}</p>
-                        <p className="text-xs text-muted-foreground">{item.size}</p>
+                        <p className="font-medium text-sm">{item.product?.name}</p>
+                        <p className="text-xs text-muted-foreground">{item.variant || ''}</p>
                         <p className="text-sm font-semibold mt-1">
-                          {item.quantity} × PKR {item.price.toLocaleString()}
+                          {item.quantity} × PKR {(item.product?.price || 0).toLocaleString()}
                         </p>
                       </div>
                     </div>
