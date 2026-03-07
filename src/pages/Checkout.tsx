@@ -22,18 +22,26 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import heroProduct from "@/assets/hero-product.jpg";
+import { useCartContext } from "@/contexts/CartContext";
+import { useOrders } from "@/hooks/useOrders";
+import { useAuth } from "@/contexts/AuthContext";
 
 type CheckoutStep = "cart" | "shipping" | "payment" | "confirmation";
 
-interface CartItem {
+interface ProductDetails {
   id: string;
   name: string;
-  size: string;
   price: number;
-  originalPrice: number;
+  original_price: number | null;
+  image_url: string | null;
+}
+
+interface CheckoutCartItem {
+  id: string;
+  product_id: string;
   quantity: number;
-  image: string;
+  variant: string | null;
+  product?: ProductDetails;
 }
 
 interface ShippingInfo {
