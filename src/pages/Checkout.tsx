@@ -294,23 +294,25 @@ const Checkout = () => {
                   >
                     <h2 className="text-2xl font-serif font-bold mb-6">Your Cart</h2>
                     
-                    {cartItems.map((item) => (
+                    {checkoutItems.map((item) => (
                       <div key={item.id} className="flex gap-4 p-4 rounded-xl bg-muted/30 mb-4">
                         <img
-                          src={item.image}
-                          alt={item.name}
+                          src={item.product?.image_url || '/placeholder.svg'}
+                          alt={item.product?.name || 'Product'}
                           className="w-24 h-24 rounded-xl object-cover"
                         />
                         <div className="flex-1">
-                          <h3 className="font-semibold">{item.name}</h3>
-                          <p className="text-sm text-muted-foreground">{item.size}</p>
+                          <h3 className="font-semibold">{item.product?.name}</h3>
+                          <p className="text-sm text-muted-foreground">{item.variant || ''}</p>
                           <div className="flex items-center gap-2 mt-2">
                             <span className="font-bold text-gold">
-                              PKR {item.price.toLocaleString()}
+                              PKR {(item.product?.price || 0).toLocaleString()}
                             </span>
-                            <span className="text-sm text-muted-foreground line-through">
-                              PKR {item.originalPrice.toLocaleString()}
-                            </span>
+                            {item.product?.original_price && item.product.original_price > item.product.price && (
+                              <span className="text-sm text-muted-foreground line-through">
+                                PKR {item.product.original_price.toLocaleString()}
+                              </span>
+                            )}
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
