@@ -95,6 +95,60 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
   const { ref: emailRegisterRef, ...emailRegisterRest } = register("email");
   const { ref: passwordRegisterRef, ...passwordRegisterRest } = register("password");
 
+  const handleForgotPassword = async () => {
+    if (!forgotEmail.trim()) {
+      toast({ variant: "destructive", title: "Please enter your email address" });
+      return;
+    }
+    setIsSendingReset(true);
+    const { error } = await resetPassword(forgotEmail);
+    setIsSendingReset(false);
+    if (error) {
+      toast({ variant: "destructive", title: "Failed to send reset link", description: error.message });
+    } else {
+      toast({ title: "Reset link sent! 📧", description: "Check your email for the password reset link." });
+      setShowForgotPassword(false);
+      setForgotEmail("");
+    }
+  };
+
+  if (showForgotPassword) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+        className="space-y-5"
+      >
+        <h3 className="text-lg font-semibold">Reset Password</h3>
+        <p className="text-sm text-muted-foreground">Enter your email and we'll send you a reset link.</p>
+        <FloatingLabelInput
+          label="Email Address"
+          type="email"
+          value={forgotEmail}
+          onChange={(e) => setForgotEmail(e.target.value)}
+        />
+        <Button
+          variant="hero"
+          size="xl"
+          className="w-full"
+          onClick={handleForgotPassword}
+          disabled={isSendingReset}
+        >
+          {isSendingReset ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
+          Send Reset Link
+        </Button>
+        <button
+          type="button"
+          onClick={() => setShowForgotPassword(false)}
+          className="text-sm text-gold hover:text-gold/80 w-full text-center"
+        >
+          Back to Sign In
+        </button>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.form
       initial={{ opacity: 0, x: 20 }}
