@@ -181,19 +181,44 @@ const Checkout = () => {
   };
 
   const handlePlaceOrder = async () => {
+    if (!user) {
+      toast({ variant: "destructive", title: "Please sign in to place an order" });
+      return;
+    }
     setIsProcessing(true);
-    // Simulate payment processing
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    
-    // Generate order ID
-    const generatedOrderId = `SHJ-${Date.now().toString(36).toUpperCase()}`;
-    setOrderId(generatedOrderId);
+
+    const orderItems = checkoutItems.map(item => ({
+      product_name: item.product?.name || 'Unknown Product',
+      product_image: item.product?.image_url || null,
+      quantity: item.quantity,
+      price: item.product?.price || 0,
+      product_id: item.product_id,
+    }));
+
+    const result = await createOrder({
+      total_amount: total,
+      shipping_address: shippingInfo.address,
+      shipping_city: shippingInfo.city,
+      shipping_postal_code: shippingInfo.zipCode,
+      shipping_phone: shippingInfo.phone,
+      notes: shippingInfo.state ? `State: ${shippingInfo.state}` : undefined,
+      items: orderItems,
+    });
+
     setIsProcessing(false);
+
+    if (result.error) {
+      toast({ variant: "destructive", title: "Order failed", description: result.error.message });
+      return;
+    }
+
+    setOrderId(result.data?.order_number || result.data?.id || '');
+    await clearCart();
     setCurrentStep("confirmation");
-    
+
     toast({
       title: "Order Placed Successfully! 🎉",
-      description: `Your order ${generatedOrderId} has been confirmed.`,
+      description: `Your order has been confirmed.`,
     });
   };
 
