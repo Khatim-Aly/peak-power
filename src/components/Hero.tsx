@@ -3,6 +3,7 @@ import { ArrowRight, Star, Shield, Leaf } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 import heroProduct from "@/assets/hero-product.jpg";
+import heroBg from "@/assets/hero-bg.jpg";
 
 const Hero = () => {
   const trustBadges = [
