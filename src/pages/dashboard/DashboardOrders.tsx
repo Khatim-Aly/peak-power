@@ -96,7 +96,7 @@ const DashboardOrders = () => {
     setIsLoading(true);
     const { data, error } = await supabase.rpc('get_merchant_orders');
     if (!error && data) {
-      setMerchantOrders(data as unknown as MerchantOrder[]);
+      setMerchantOrders(data as any[]);
     }
     setIsLoading(false);
   };
