@@ -29,37 +29,19 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
-interface MerchantOrder {
+interface NormalizedOrder {
   id: string;
   order_number: string;
   status: string;
   total_amount: number;
   created_at: string;
-  updated_at: string;
-  user_id: string;
-  notes: string | null;
-  order_items: {
+  shipping_address?: string | null;
+  shipping_city?: string | null;
+  shipping_phone?: string | null;
+  customer_name?: string | null;
+  items: {
     product_name: string;
-    product_image: string;
-    quantity: number;
-    price: number;
-  }[];
-  customer_name: string | null;
-}
-
-interface AdminOrder {
-  id: string;
-  order_number: string;
-  status: string;
-  total_amount: number;
-  shipping_address: string | null;
-  shipping_city: string | null;
-  shipping_phone: string | null;
-  created_at: string;
-  user_id: string;
-  order_items: {
-    product_name: string;
-    product_image: string;
+    product_image: string | null;
     quantity: number;
     price: number;
   }[];
