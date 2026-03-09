@@ -126,23 +126,38 @@ const DashboardOrders = () => {
   };
 
   // Normalize orders to a common shape
-  const orders = role === 'admin' 
+  const orders: NormalizedOrder[] = role === 'admin' 
     ? adminOrders.map(o => ({
-        ...o,
-        items: o.order_items,
-        customer_name: null as string | null,
+        id: o.id,
+        order_number: o.order_number,
+        status: o.status,
+        total_amount: o.total_amount,
+        created_at: o.created_at,
+        shipping_address: o.shipping_address,
+        shipping_city: o.shipping_city,
+        shipping_phone: o.shipping_phone,
+        items: o.order_items || [],
       }))
     : role === 'merchant'
     ? merchantOrders.map(o => ({
-        ...o,
-        items: o.order_items,
-        shipping_address: null as string | null,
-        shipping_city: null as string | null,
-        shipping_phone: null as string | null,
+        id: o.id,
+        order_number: o.order_number,
+        status: o.status,
+        total_amount: o.total_amount,
+        created_at: o.created_at,
+        customer_name: o.customer_name,
+        items: o.order_items || [],
       }))
     : userOrders.map(o => ({
-        ...o,
-        customer_name: null as string | null,
+        id: o.id,
+        order_number: o.order_number,
+        status: o.status,
+        total_amount: o.total_amount,
+        created_at: o.created_at,
+        shipping_address: o.shipping_address,
+        shipping_city: o.shipping_city,
+        shipping_phone: o.shipping_phone,
+        items: o.items || [],
       }));
 
   const loading = role === 'user' || !role ? userOrdersLoading : isLoading;
