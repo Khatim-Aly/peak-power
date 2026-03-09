@@ -87,7 +87,7 @@ const DashboardOrders = () => {
       .order('created_at', { ascending: false });
 
     if (!error && data) {
-      setAdminOrders(data as unknown as AdminOrder[]);
+      setAdminOrders(data);
     }
     setIsLoading(false);
   };
