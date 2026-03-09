@@ -64,8 +64,8 @@ const DashboardOrders = () => {
   const { orders: userOrders, isLoading: userOrdersLoading } = useOrders();
   
   // For admin/merchant, fetch separately
-  const [adminOrders, setAdminOrders] = useState<AdminOrder[]>([]);
-  const [merchantOrders, setMerchantOrders] = useState<MerchantOrder[]>([]);
+  const [adminOrders, setAdminOrders] = useState<any[]>([]);
+  const [merchantOrders, setMerchantOrders] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
 
