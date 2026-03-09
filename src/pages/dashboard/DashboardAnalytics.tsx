@@ -41,19 +41,38 @@ const DashboardAnalytics = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [role]);
 
   const fetchData = async () => {
     setIsLoading(true);
-    const [ordersRes, usersRes, productsRes] = await Promise.all([
-      supabase.from('orders').select('*').order('created_at', { ascending: true }),
-      supabase.from('profiles').select('*'),
-      supabase.from('products').select('*'),
-    ]);
 
-    if (ordersRes.data) setOrders(ordersRes.data);
-    if (usersRes.data) setUsers(usersRes.data);
-    if (productsRes.data) setProducts(productsRes.data);
+    if (role === 'admin') {
+      // Admin can query all tables
+      const [ordersRes, usersRes, productsRes] = await Promise.all([
+        supabase.from('orders').select('*').order('created_at', { ascending: true }),
+        supabase.from('profiles').select('*'),
+        supabase.from('products').select('*'),
+      ]);
+      if (ordersRes.data) setOrders(ordersRes.data);
+      if (usersRes.data) setUsers(usersRes.data);
+      if (productsRes.data) setProducts(productsRes.data);
+    } else if (role === 'merchant') {
+      // Merchant uses RPC for orders, can query their own products
+      const [ordersRes, productsRes] = await Promise.all([
+        supabase.rpc('get_merchant_orders'),
+        supabase.from('products').select('*'),
+      ]);
+      if (ordersRes.data) setOrders(ordersRes.data as any[]);
+      if (productsRes.data) setProducts(productsRes.data);
+    } else {
+      // Regular user - just their orders
+      const ordersRes = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: true });
+      if (ordersRes.data) setOrders(ordersRes.data);
+    }
+
     setIsLoading(false);
   };
 
@@ -95,8 +114,6 @@ const DashboardAnalytics = () => {
       icon: DollarSign, 
       color: 'text-green-500',
       bgColor: 'bg-green-500/10',
-      change: '+12%',
-      trend: 'up'
     },
     { 
       label: 'Total Orders', 
@@ -104,8 +121,6 @@ const DashboardAnalytics = () => {
       icon: Package, 
       color: 'text-gold',
       bgColor: 'bg-gold/10',
-      change: '+8%',
-      trend: 'up'
     },
     { 
       label: 'Avg Order Value', 
@@ -113,18 +128,20 @@ const DashboardAnalytics = () => {
       icon: ShoppingBag, 
       color: 'text-blue-500',
       bgColor: 'bg-blue-500/10',
-      change: '+5%',
-      trend: 'up'
     },
-    { 
+    ...(role === 'admin' ? [{ 
       label: 'Total Users', 
       value: users.length, 
       icon: Users, 
       color: 'text-purple-500',
       bgColor: 'bg-purple-500/10',
-      change: '+15%',
-      trend: 'up'
-    },
+    }] : [{ 
+      label: 'Products', 
+      value: products.length, 
+      icon: ShoppingBag, 
+      color: 'text-purple-500',
+      bgColor: 'bg-purple-500/10',
+    }]),
   ];
 
   if (isLoading) {
@@ -158,17 +175,8 @@ const DashboardAnalytics = () => {
             transition={{ delay: index * 0.1 }}
             className="bg-card rounded-2xl p-5 border border-border"
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className={`w-10 h-10 rounded-xl ${stat.bgColor} flex items-center justify-center`}>
-                <stat.icon className={`w-5 h-5 ${stat.color}`} />
-              </div>
-              <Badge 
-                variant={stat.trend === 'up' ? 'default' : 'destructive'}
-                className={stat.trend === 'up' ? 'bg-green-500' : ''}
-              >
-                {stat.trend === 'up' ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
-                {stat.change}
-              </Badge>
+            <div className={`w-10 h-10 rounded-xl ${stat.bgColor} flex items-center justify-center mb-3`}>
+              <stat.icon className={`w-5 h-5 ${stat.color}`} />
             </div>
             <p className="text-2xl font-bold">{stat.value}</p>
             <p className="text-sm text-muted-foreground">{stat.label}</p>
@@ -193,34 +201,40 @@ const DashboardAnalytics = () => {
             </Badge>
           </div>
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData as any[]}>
-                <defs>
-                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#D4AF37" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'hsl(var(--card))', 
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '12px'
-                  }}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="revenue" 
-                  stroke="#D4AF37" 
-                  strokeWidth={2}
-                  fillOpacity={1} 
-                  fill="url(#colorRevenue)" 
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            {chartData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData as any[]}>
+                  <defs>
+                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#D4AF37" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--card))', 
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '12px'
+                    }}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="revenue" 
+                    stroke="#D4AF37" 
+                    strokeWidth={2}
+                    fillOpacity={1} 
+                    fill="url(#colorRevenue)" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <p className="text-muted-foreground">No revenue data yet</p>
+              </div>
+            )}
           </div>
         </motion.div>
 
@@ -284,21 +298,27 @@ const DashboardAnalytics = () => {
         >
           <h3 className="text-lg font-serif font-bold mb-6">Orders Over Time</h3>
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData as any[]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'hsl(var(--card))', 
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '12px'
-                  }}
-                />
-                <Bar dataKey="orders" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {chartData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData as any[]}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--card))', 
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '12px'
+                    }}
+                  />
+                  <Bar dataKey="orders" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <p className="text-muted-foreground">No order data yet</p>
+              </div>
+            )}
           </div>
         </motion.div>
       </div>

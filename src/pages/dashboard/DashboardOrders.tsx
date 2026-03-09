@@ -15,8 +15,8 @@ import {
 } from "lucide-react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
+import { useOrders } from "@/hooks/useOrders";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -29,27 +29,22 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
-interface Order {
+interface NormalizedOrder {
   id: string;
   order_number: string;
   status: string;
   total_amount: number;
-  shipping_address: string;
-  shipping_city: string;
-  shipping_phone: string;
   created_at: string;
-  user_id: string;
-  order_items: {
+  shipping_address?: string | null;
+  shipping_city?: string | null;
+  shipping_phone?: string | null;
+  customer_name?: string | null;
+  items: {
     product_name: string;
-    product_image: string;
+    product_image: string | null;
     quantity: number;
     price: number;
   }[];
-  profiles?: {
-    full_name: string;
-    email: string;
-    phone: string;
-  };
 }
 
 const statusOptions = [
@@ -64,34 +59,52 @@ const statusOptions = [
 const DashboardOrders = () => {
   const { role } = useAuth();
   const { toast } = useToast();
-  const [orders, setOrders] = useState<Order[]>([]);
+  
+  // For regular users, use the useOrders hook
+  const { orders: userOrders, isLoading: userOrdersLoading } = useOrders();
+  
+  // For admin/merchant, fetch separately
+  const [adminOrders, setAdminOrders] = useState<any[]>([]);
+  const [merchantOrders, setMerchantOrders] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    if (role === 'admin') {
+      fetchAdminOrders();
+    } else if (role === 'merchant') {
+      fetchMerchantOrders();
+    } else {
+      setIsLoading(false);
+    }
+  }, [role]);
 
-  const fetchOrders = async () => {
+  const fetchAdminOrders = async () => {
+    setIsLoading(true);
     const { data, error } = await supabase
       .from('orders')
-      .select(`
-        *,
-        order_items (*),
-        profiles:user_id (full_name, email, phone)
-      `)
+      .select(`*, order_items (*)`)
       .order('created_at', { ascending: false });
 
     if (!error && data) {
-      setOrders(data as unknown as Order[]);
+      setAdminOrders(data);
     }
     setIsLoading(false);
   };
 
-  const updateOrderStatus = async (orderId: string, newStatus: 'placed' | 'confirmed' | 'dispatched' | 'shipped' | 'delivered' | 'cancelled') => {
+  const fetchMerchantOrders = async () => {
+    setIsLoading(true);
+    const { data, error } = await supabase.rpc('get_merchant_orders');
+    if (!error && data) {
+      setMerchantOrders(data as any[]);
+    }
+    setIsLoading(false);
+  };
+
+  const updateOrderStatus = async (orderId: string, newStatus: string) => {
     const { error } = await supabase
       .from('orders')
-      .update({ status: newStatus })
+      .update({ status: newStatus as any })
       .eq('id', orderId);
 
     if (error) {
@@ -108,14 +121,54 @@ const DashboardOrders = () => {
       description: `Order status changed to ${newStatus}`,
     });
 
-    fetchOrders();
+    if (role === 'admin') fetchAdminOrders();
+    else if (role === 'merchant') fetchMerchantOrders();
   };
+
+  // Normalize orders to a common shape
+  const orders: NormalizedOrder[] = role === 'admin' 
+    ? adminOrders.map(o => ({
+        id: o.id,
+        order_number: o.order_number,
+        status: o.status,
+        total_amount: o.total_amount,
+        created_at: o.created_at,
+        shipping_address: o.shipping_address,
+        shipping_city: o.shipping_city,
+        shipping_phone: o.shipping_phone,
+        items: o.order_items || [],
+      }))
+    : role === 'merchant'
+    ? merchantOrders.map(o => ({
+        id: o.id,
+        order_number: o.order_number,
+        status: o.status,
+        total_amount: o.total_amount,
+        created_at: o.created_at,
+        customer_name: o.customer_name,
+        items: o.order_items || [],
+      }))
+    : userOrders.map(o => ({
+        id: o.id,
+        order_number: o.order_number,
+        status: o.status,
+        total_amount: o.total_amount,
+        created_at: o.created_at,
+        shipping_address: o.shipping_address,
+        shipping_city: o.shipping_city,
+        shipping_phone: o.shipping_phone,
+        items: o.items || [],
+      }));
+
+  const loading = role === 'user' || !role ? userOrdersLoading : isLoading;
 
   const pendingOrders = orders.filter(o => ['placed', 'confirmed'].includes(o.status));
   const inTransitOrders = orders.filter(o => ['dispatched', 'shipped'].includes(o.status));
   const completedOrders = orders.filter(o => o.status === 'delivered');
   const cancelledOrders = orders.filter(o => o.status === 'cancelled');
   const totalRevenue = orders.reduce((sum, o) => o.status !== 'cancelled' ? sum + Number(o.total_amount) : sum, 0);
+
+  const canEditStatus = role === 'admin' || role === 'merchant';
 
   const stats = [
     { label: 'Total Orders', value: orders.length, icon: Package, color: 'text-gold', bgColor: 'bg-gold/10' },
@@ -124,9 +177,7 @@ const DashboardOrders = () => {
     { label: 'Revenue', value: `PKR ${totalRevenue.toFixed(0)}`, icon: DollarSign, color: 'text-green-500', bgColor: 'bg-green-500/10' },
   ];
 
-  const canEditStatus = role === 'admin' || role === 'merchant';
-
-  const renderOrdersList = (ordersList: Order[]) => {
+  const renderOrdersList = (ordersList: typeof orders) => {
     if (ordersList.length === 0) {
       return (
         <div className="p-12 text-center">
@@ -141,6 +192,7 @@ const DashboardOrders = () => {
         {ordersList.map((order, index) => {
           const isExpanded = expandedOrder === order.id;
           const statusConfig = statusOptions.find(s => s.value === order.status);
+          const items = order.items || [];
 
           return (
             <motion.div
@@ -155,9 +207,9 @@ const DashboardOrders = () => {
               >
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-lg bg-muted overflow-hidden flex-shrink-0">
-                    {order.order_items?.[0]?.product_image ? (
+                    {items[0]?.product_image ? (
                       <img 
-                        src={order.order_items[0].product_image} 
+                        src={items[0].product_image} 
                         alt="" 
                         className="w-full h-full object-cover"
                       />
@@ -179,7 +231,7 @@ const DashboardOrders = () => {
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {order.order_items?.length || 0} items • PKR {Number(order.total_amount).toFixed(2)}
+                      {items.length} items • PKR {Number(order.total_amount).toFixed(2)}
                     </p>
                   </div>
 
@@ -187,7 +239,7 @@ const DashboardOrders = () => {
                     <div onClick={e => e.stopPropagation()}>
                       <Select
                         value={order.status}
-                        onValueChange={(value) => updateOrderStatus(order.id, value as 'placed' | 'confirmed' | 'dispatched' | 'shipped' | 'delivered' | 'cancelled')}
+                        onValueChange={(value) => updateOrderStatus(order.id, value)}
                       >
                         <SelectTrigger className="w-36">
                           <SelectValue />
@@ -222,34 +274,54 @@ const DashboardOrders = () => {
                   className="px-4 pb-4"
                 >
                   <div className="bg-muted/30 rounded-xl p-4 space-y-4">
-                    <div>
-                      <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
-                        <User className="w-4 h-4" /> Customer Details
-                      </h4>
-                      <div className="grid md:grid-cols-2 gap-2 text-sm text-muted-foreground">
-                        <p>{order.profiles?.full_name || 'N/A'}</p>
-                        <p>{order.profiles?.email || 'N/A'}</p>
+                    {/* Customer info for merchant */}
+                    {role === 'merchant' && order.customer_name && (
+                      <div>
+                        <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+                          <User className="w-4 h-4" /> Customer
+                        </h4>
+                        <p className="text-sm text-muted-foreground">{order.customer_name}</p>
                       </div>
-                    </div>
+                    )}
 
-                    <div>
-                      <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
-                        <MapPin className="w-4 h-4" /> Shipping Address
-                      </h4>
-                      <p className="text-sm text-muted-foreground">
-                        {order.shipping_address}, {order.shipping_city}
-                      </p>
-                      {order.shipping_phone && (
-                        <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                          <Phone className="w-3 h-3" /> {order.shipping_phone}
+                    {/* Shipping info for admin */}
+                    {role === 'admin' && order.shipping_address && (
+                      <div>
+                        <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+                          <MapPin className="w-4 h-4" /> Shipping Address
+                        </h4>
+                        <p className="text-sm text-muted-foreground">
+                          {order.shipping_address}, {order.shipping_city}
                         </p>
-                      )}
-                    </div>
+                        {order.shipping_phone && (
+                          <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                            <Phone className="w-3 h-3" /> {order.shipping_phone}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Shipping info for user's own orders */}
+                    {(!role || role === 'user') && (order as any).shipping_address && (
+                      <div>
+                        <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+                          <MapPin className="w-4 h-4" /> Shipping Address
+                        </h4>
+                        <p className="text-sm text-muted-foreground">
+                          {(order as any).shipping_address}, {(order as any).shipping_city}
+                        </p>
+                        {(order as any).shipping_phone && (
+                          <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                            <Phone className="w-3 h-3" /> {(order as any).shipping_phone}
+                          </p>
+                        )}
+                      </div>
+                    )}
 
                     <div>
                       <h4 className="text-sm font-medium mb-2">Order Items</h4>
                       <div className="space-y-2">
-                        {order.order_items?.map((item, i) => (
+                        {items.map((item, i) => (
                           <div key={i} className="flex items-center gap-3 text-sm">
                             <div className="w-10 h-10 rounded bg-muted overflow-hidden">
                               {item.product_image ? (
@@ -292,8 +364,8 @@ const DashboardOrders = () => {
 
   return (
     <DashboardLayout 
-      title="Orders Management"
-      subtitle="View and manage all orders"
+      title={role === 'user' || !role ? "My Orders" : "Orders Management"}
+      subtitle={role === 'user' || !role ? "Track your order history" : "View and manage all orders"}
     >
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -342,7 +414,7 @@ const DashboardOrders = () => {
             </TabsList>
           </div>
 
-          {isLoading ? (
+          {loading ? (
             <div className="p-6 space-y-4">
               {[1, 2, 3].map(i => (
                 <div key={i} className="flex items-center gap-4">

@@ -246,7 +246,6 @@ const SidebarContent = ({
     {/* Logo */}
     <Link to="/" className="flex items-center gap-2 mb-8">
       <span className="font-serif text-2xl font-bold text-gold">PeakPower</span>
-      <span className="text-sm text-muted-foreground">GB</span>
     </Link>
 
     {/* User Card */}
