@@ -3,6 +3,7 @@ import { ArrowRight, Star, Shield, Leaf } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 import heroProduct from "@/assets/hero-product.jpg";
+import heroBg from "@/assets/hero-bg.jpg";
 
 const Hero = () => {
   const trustBadges = [
@@ -13,8 +14,12 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted" />
+      {/* Background Image */}
+      <div className="absolute inset-0">
+        <img src={heroBg} alt="" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-background/70 dark:bg-background/80" />
+        <div className="absolute inset-0 bg-gradient-to-br from-background/60 via-transparent to-muted/40" />
+      </div>
       
       {/* Animated Gold Orb */}
       <motion.div
