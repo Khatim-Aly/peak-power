@@ -90,6 +90,27 @@ const DashboardProducts = () => {
     fetchProducts();
   };
 
+  const deleteProduct = async (productId: string, productName: string) => {
+    if (!confirm(`Delete "${productName}"? This cannot be undone.`)) return;
+
+    const { error } = await supabase.from('products').delete().eq('id', productId);
+    if (error) {
+      toast({ variant: "destructive", title: "Error", description: "Failed to delete product" });
+      return;
+    }
+    toast({ title: "Deleted", description: `${productName} has been removed.` });
+    fetchProducts();
+  };
+
+  const openEdit = (product: Product) => {
+    setEditingProduct(product);
+    setFormOpen(true);
+  };
+
+  const openAdd = () => {
+    setEditingProduct(null);
+    setFormOpen(true);
+
   const totalValue = products.reduce((sum, p) => sum + (p.price * p.stock), 0);
   const activeProducts = products.filter(p => p.is_active).length;
 
