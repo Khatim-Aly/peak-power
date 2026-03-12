@@ -64,11 +64,23 @@ interface ShippingFee {
 const Checkout = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { cartItems: rawCartItems, clearCart, updateQuantity: updateCartQuantity } = useCartContext();
   const { createOrder } = useOrders();
   const [currentStep, setCurrentStep] = useState<CheckoutStep>("cart");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [orderId, setOrderId] = useState("");
+  const [shippingFees, setShippingFees] = useState<ShippingFee[]>([]);
+  const [selectedShippingFee, setSelectedShippingFee] = useState<number>(0);
+  const [checkoutItems, setCheckoutItems] = useState<CheckoutCartItem[]>([]);
+
+  // Redirect unauthenticated users
+  useEffect(() => {
+    if (!authLoading && !user) {
+      toast({ variant: "destructive", title: "Please sign in to checkout" });
+      navigate('/');
+    }
+  }, [user, authLoading, navigate]);
   const [orderId, setOrderId] = useState("");
   const [shippingFees, setShippingFees] = useState<ShippingFee[]>([]);
   const [selectedShippingFee, setSelectedShippingFee] = useState<number>(0);
