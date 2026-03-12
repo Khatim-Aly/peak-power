@@ -152,7 +152,7 @@ const DashboardProducts = () => {
             <h2 className="text-xl font-serif font-bold">Product Listings</h2>
             <p className="text-sm text-muted-foreground">{products.length} products total</p>
           </div>
-          <Button>
+          <Button onClick={openAdd}>
             <Plus className="w-4 h-4 mr-2" />
             Add Product
           </Button>
