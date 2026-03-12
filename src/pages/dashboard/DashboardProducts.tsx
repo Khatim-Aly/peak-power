@@ -24,6 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
+import ProductFormModal from "@/components/dashboard/ProductFormModal";
 
 interface Product {
   id: string;
