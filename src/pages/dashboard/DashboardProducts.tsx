@@ -110,6 +110,7 @@ const DashboardProducts = () => {
   const openAdd = () => {
     setEditingProduct(null);
     setFormOpen(true);
+  };
 
   const totalValue = products.reduce((sum, p) => sum + (p.price * p.stock), 0);
   const activeProducts = products.filter(p => p.is_active).length;
