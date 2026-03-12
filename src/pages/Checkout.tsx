@@ -81,10 +81,6 @@ const Checkout = () => {
       navigate('/');
     }
   }, [user, authLoading, navigate]);
-  const [orderId, setOrderId] = useState("");
-  const [shippingFees, setShippingFees] = useState<ShippingFee[]>([]);
-  const [selectedShippingFee, setSelectedShippingFee] = useState<number>(0);
-  const [checkoutItems, setCheckoutItems] = useState<CheckoutCartItem[]>([]);
 
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
     fullName: "",
