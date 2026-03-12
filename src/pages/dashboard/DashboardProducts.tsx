@@ -249,10 +249,10 @@ const DashboardProducts = () => {
                             <Eye className="w-4 h-4" />
                           )}
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" onClick={() => openEdit(product)}>
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => deleteProduct(product.id, product.name)}>
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
