@@ -264,6 +264,16 @@ const DashboardProducts = () => {
           </div>
         )}
       </div>
+
+      {user && (
+        <ProductFormModal
+          open={formOpen}
+          onOpenChange={setFormOpen}
+          product={editingProduct}
+          userId={user.id}
+          onSaved={fetchProducts}
+        />
+      )}
     </DashboardLayout>
   );
 };
