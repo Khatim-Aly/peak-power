@@ -24,6 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
+import ProductFormModal from "@/components/dashboard/ProductFormModal";
 
 interface Product {
   id: string;
@@ -43,6 +44,8 @@ const DashboardProducts = () => {
   const { toast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -87,6 +90,28 @@ const DashboardProducts = () => {
     fetchProducts();
   };
 
+  const deleteProduct = async (productId: string, productName: string) => {
+    if (!confirm(`Delete "${productName}"? This cannot be undone.`)) return;
+
+    const { error } = await supabase.from('products').delete().eq('id', productId);
+    if (error) {
+      toast({ variant: "destructive", title: "Error", description: "Failed to delete product" });
+      return;
+    }
+    toast({ title: "Deleted", description: `${productName} has been removed.` });
+    fetchProducts();
+  };
+
+  const openEdit = (product: Product) => {
+    setEditingProduct(product);
+    setFormOpen(true);
+  };
+
+  const openAdd = () => {
+    setEditingProduct(null);
+    setFormOpen(true);
+  };
+
   const totalValue = products.reduce((sum, p) => sum + (p.price * p.stock), 0);
   const activeProducts = products.filter(p => p.is_active).length;
 
@@ -127,7 +152,7 @@ const DashboardProducts = () => {
             <h2 className="text-xl font-serif font-bold">Product Listings</h2>
             <p className="text-sm text-muted-foreground">{products.length} products total</p>
           </div>
-          <Button>
+          <Button onClick={openAdd}>
             <Plus className="w-4 h-4 mr-2" />
             Add Product
           </Button>
@@ -150,7 +175,7 @@ const DashboardProducts = () => {
           <div className="p-12 text-center">
             <Package className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
             <p className="text-muted-foreground mb-4">No products yet</p>
-            <Button>
+            <Button onClick={openAdd}>
               <Plus className="w-4 h-4 mr-2" />
               Add Your First Product
             </Button>
@@ -224,10 +249,10 @@ const DashboardProducts = () => {
                             <Eye className="w-4 h-4" />
                           )}
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" onClick={() => openEdit(product)}>
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => deleteProduct(product.id, product.name)}>
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
@@ -239,6 +264,16 @@ const DashboardProducts = () => {
           </div>
         )}
       </div>
+
+      {user && (
+        <ProductFormModal
+          open={formOpen}
+          onOpenChange={setFormOpen}
+          product={editingProduct}
+          userId={user.id}
+          onSaved={fetchProducts}
+        />
+      )}
     </DashboardLayout>
   );
 };
