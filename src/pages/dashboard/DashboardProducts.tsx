@@ -175,7 +175,7 @@ const DashboardProducts = () => {
           <div className="p-12 text-center">
             <Package className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
             <p className="text-muted-foreground mb-4">No products yet</p>
-            <Button>
+            <Button onClick={openAdd}>
               <Plus className="w-4 h-4 mr-2" />
               Add Your First Product
             </Button>
