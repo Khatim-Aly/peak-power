@@ -29,7 +29,7 @@ import ProductFormModal from "@/components/dashboard/ProductFormModal";
 interface Product {
   id: string;
   name: string;
-  description: string;
+  description: string | null;
   price: number;
   original_price: number | null;
   stock: number;

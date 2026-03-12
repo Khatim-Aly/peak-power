@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   User, 
@@ -25,12 +25,25 @@ const DashboardSettings = () => {
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
-    full_name: profile?.full_name || '',
-    phone: profile?.phone || '',
-    address: profile?.address || '',
-    city: profile?.city || '',
-    postal_code: profile?.postal_code || '',
+    full_name: '',
+    phone: '',
+    address: '',
+    city: '',
+    postal_code: '',
   });
+
+  // Sync form data when profile loads asynchronously
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        full_name: profile.full_name || '',
+        phone: profile.phone || '',
+        address: profile.address || '',
+        city: profile.city || '',
+        postal_code: profile.postal_code || '',
+      });
+    }
+  }, [profile]);
 
   const handleSaveProfile = async () => {
     if (!user) return;
