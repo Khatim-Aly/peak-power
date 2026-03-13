@@ -89,6 +89,20 @@ export const useCart = () => {
       return removeFromCart(itemId);
     }
 
+    // Find the cart item to get product_id
+    const cartItem = cartItems.find(i => i.id === itemId);
+    if (cartItem) {
+      const { data: product } = await supabase
+        .from('products')
+        .select('stock')
+        .eq('id', cartItem.product_id)
+        .maybeSingle();
+
+      if (product && quantity > product.stock) {
+        return { error: new Error(`Only ${product.stock} available in stock`) };
+      }
+    }
+
     const { error } = await supabase
       .from('cart_items')
       .update({ quantity })
