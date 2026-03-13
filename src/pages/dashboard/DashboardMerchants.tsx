@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Users, Store, Shield, Edit, UserCheck, Package, DollarSign } from "lucide-react";
+import { Users, Store, Shield, Edit, UserCheck, Package, DollarSign, Eye } from "lucide-react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { UserEditModal } from "@/components/dashboard/UserEditModal";
+import MerchantDetailModal from "@/components/dashboard/MerchantDetailModal";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
