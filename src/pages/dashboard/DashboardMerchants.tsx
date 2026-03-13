@@ -189,6 +189,15 @@ const DashboardMerchants = () => {
                           <Button 
                             variant="ghost" 
                             size="sm"
+                            onClick={() => setViewingMerchant(user)}
+                            className="text-blue-500 hover:text-blue-500"
+                          >
+                            <Eye className="w-4 h-4 mr-1" />
+                            View
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
                             onClick={() => setEditingUser(user)}
                             className="text-gold hover:text-gold"
                           >
