@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { useCartContext } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 
 interface Product {
@@ -13,6 +14,7 @@ interface Product {
   name: string;
   price: number;
   image_url: string | null;
+  stock: number;
 }
 
 interface CartDrawerProps {
@@ -22,6 +24,7 @@ interface CartDrawerProps {
 
 const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const { cartItems, updateQuantity, removeFromCart, isLoading } = useCartContext();
   const [products, setProducts] = useState<Record<string, Product>>({});
 
@@ -30,7 +33,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
       const productIds = [...new Set(cartItems.map(item => item.product_id))];
       supabase
         .from('products')
-        .select('id, name, price, image_url')
+        .select('id, name, price, image_url, stock')
         .in('id', productIds)
         .then(({ data }) => {
           if (data) {
@@ -147,8 +150,14 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                           </button>
                           <span className="text-sm font-medium w-6 text-center">{item.quantity}</span>
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="w-7 h-7 rounded-full bg-muted flex items-center justify-center hover:bg-muted-foreground/20 transition-colors"
+                            onClick={async () => {
+                              const result = await updateQuantity(item.id, item.quantity + 1);
+                              if (result?.error) {
+                                toast({ variant: "destructive", title: "Stock limit", description: result.error.message });
+                              }
+                            }}
+                            disabled={product ? item.quantity >= product.stock : false}
+                            className="w-7 h-7 rounded-full bg-muted flex items-center justify-center hover:bg-muted-foreground/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                           >
                             <Plus className="w-3 h-3" />
                           </button>
