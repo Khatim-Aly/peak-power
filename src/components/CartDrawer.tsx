@@ -24,6 +24,7 @@ interface CartDrawerProps {
 
 const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const { cartItems, updateQuantity, removeFromCart, isLoading } = useCartContext();
   const [products, setProducts] = useState<Record<string, Product>>({});
 
