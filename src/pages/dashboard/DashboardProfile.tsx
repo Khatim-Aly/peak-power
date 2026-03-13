@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 
 const DashboardProfile = () => {
-  const { profile, user } = useAuth();
+  const { profile, user, role } = useAuth();
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -20,6 +20,7 @@ const DashboardProfile = () => {
     address: '',
     city: '',
     postal_code: '',
+    store_name: '',
   });
 
   // Sync form data when profile loads asynchronously
@@ -31,9 +32,16 @@ const DashboardProfile = () => {
         address: profile.address || '',
         city: profile.city || '',
         postal_code: profile.postal_code || '',
+        store_name: '',
       });
+      // Fetch store_name separately since it's not in the typed profile
+      if (user) {
+        supabase.from('profiles').select('store_name').eq('user_id', user.id).maybeSingle().then(({ data }) => {
+          if (data) setFormData(prev => ({ ...prev, store_name: (data as any).store_name || '' }));
+        });
+      }
     }
-  }, [profile]);
+  }, [profile, user]);
 
   const handleSave = async () => {
     if (!user) return;
