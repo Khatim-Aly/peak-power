@@ -148,6 +148,19 @@ const DashboardProfile = () => {
                 placeholder="Enter postal code"
               />
             </div>
+
+            {role === 'merchant' && (
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="store_name">Store Name</Label>
+                <Input
+                  id="store_name"
+                  value={formData.store_name}
+                  onChange={(e) => setFormData({ ...formData, store_name: e.target.value })}
+                  placeholder="Enter your store name (shown on products)"
+                />
+                <p className="text-xs text-muted-foreground">This name will be displayed on your product listings</p>
+              </div>
+            )}
           </div>
 
           <div className="mt-6 flex justify-end">
