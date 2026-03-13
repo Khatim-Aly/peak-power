@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { useCartContext } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 
 interface Product {
@@ -13,6 +14,7 @@ interface Product {
   name: string;
   price: number;
   image_url: string | null;
+  stock: number;
 }
 
 interface CartDrawerProps {
