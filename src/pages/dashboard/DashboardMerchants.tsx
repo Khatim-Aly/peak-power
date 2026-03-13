@@ -42,6 +42,7 @@ const DashboardMerchants = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
+  const [viewingMerchant, setViewingMerchant] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     fetchData();
