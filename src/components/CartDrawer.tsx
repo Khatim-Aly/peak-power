@@ -150,8 +150,14 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                           </button>
                           <span className="text-sm font-medium w-6 text-center">{item.quantity}</span>
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="w-7 h-7 rounded-full bg-muted flex items-center justify-center hover:bg-muted-foreground/20 transition-colors"
+                            onClick={async () => {
+                              const result = await updateQuantity(item.id, item.quantity + 1);
+                              if (result?.error) {
+                                toast({ variant: "destructive", title: "Stock limit", description: result.error.message });
+                              }
+                            }}
+                            disabled={product ? item.quantity >= product.stock : false}
+                            className="w-7 h-7 rounded-full bg-muted flex items-center justify-center hover:bg-muted-foreground/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                           >
                             <Plus className="w-3 h-3" />
                           </button>
