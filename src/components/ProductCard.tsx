@@ -92,7 +92,7 @@ const ProductCard = () => {
     setIsAddingToCart(false);
     
     if (error) {
-      toast({ title: "Error", description: "Failed to add to cart", variant: "destructive" });
+      toast({ title: "Stock Limit", description: error.message, variant: "destructive" });
     } else {
       toast({
         title: "Added to Cart! 🎉",
