@@ -40,23 +40,37 @@ export const useCart = () => {
   const addToCart = async (productId: string, quantity: number = 1, variant?: string) => {
     if (!user) return { error: new Error('Not authenticated') };
 
+    // Check stock
+    const { data: product } = await supabase
+      .from('products')
+      .select('stock')
+      .eq('id', productId)
+      .maybeSingle();
+
+    if (!product) return { error: new Error('Product not found') };
+
     // Check if item already exists
     const existingItem = cartItems.find(
       item => item.product_id === productId && item.variant === (variant || null)
     );
 
+    const currentQty = existingItem ? existingItem.quantity : 0;
+    const newQty = currentQty + quantity;
+
+    if (newQty > product.stock) {
+      return { error: new Error(`Only ${product.stock} available in stock (you have ${currentQty} in cart)`) };
+    }
+
     if (existingItem) {
-      // Update quantity
       const { error } = await supabase
         .from('cart_items')
-        .update({ quantity: existingItem.quantity + quantity })
+        .update({ quantity: newQty })
         .eq('id', existingItem.id);
 
       if (!error) await fetchCart();
       return { error };
     }
 
-    // Insert new item
     const { error } = await supabase
       .from('cart_items')
       .insert({
