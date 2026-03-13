@@ -240,6 +240,15 @@ const DashboardMerchants = () => {
           onSave={fetchData}
         />
       )}
+
+      {viewingMerchant && (
+        <MerchantDetailModal
+          open={!!viewingMerchant}
+          onOpenChange={(open) => !open && setViewingMerchant(null)}
+          merchantUserId={viewingMerchant.user_id}
+          merchantName={viewingMerchant.full_name || 'Merchant'}
+        />
+      )}
     </DashboardLayout>
   );
 };
