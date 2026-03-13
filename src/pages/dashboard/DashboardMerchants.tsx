@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Users, Store, Shield, Edit, UserCheck, Package, DollarSign } from "lucide-react";
+import { Users, Store, Shield, Edit, UserCheck, Package, DollarSign, Eye } from "lucide-react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { UserEditModal } from "@/components/dashboard/UserEditModal";
+import MerchantDetailModal from "@/components/dashboard/MerchantDetailModal";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -41,6 +42,7 @@ const DashboardMerchants = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
+  const [viewingMerchant, setViewingMerchant] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -187,6 +189,15 @@ const DashboardMerchants = () => {
                           <Button 
                             variant="ghost" 
                             size="sm"
+                            onClick={() => setViewingMerchant(user)}
+                            className="text-blue-500 hover:text-blue-500"
+                          >
+                            <Eye className="w-4 h-4 mr-1" />
+                            View
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
                             onClick={() => setEditingUser(user)}
                             className="text-gold hover:text-gold"
                           >
@@ -227,6 +238,15 @@ const DashboardMerchants = () => {
           user={editingUser}
           currentRole={getUserRole(editingUser.user_id)}
           onSave={fetchData}
+        />
+      )}
+
+      {viewingMerchant && (
+        <MerchantDetailModal
+          open={!!viewingMerchant}
+          onOpenChange={(open) => !open && setViewingMerchant(null)}
+          merchantUserId={viewingMerchant.user_id}
+          merchantName={viewingMerchant.full_name || 'Merchant'}
         />
       )}
     </DashboardLayout>

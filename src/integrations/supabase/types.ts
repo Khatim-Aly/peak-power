@@ -293,6 +293,7 @@ export type Database = {
           id: string
           phone: string | null
           postal_code: string | null
+          store_name: string | null
           updated_at: string
           user_id: string
         }
@@ -306,6 +307,7 @@ export type Database = {
           id?: string
           phone?: string | null
           postal_code?: string | null
+          store_name?: string | null
           updated_at?: string
           user_id: string
         }
@@ -319,6 +321,7 @@ export type Database = {
           id?: string
           phone?: string | null
           postal_code?: string | null
+          store_name?: string | null
           updated_at?: string
           user_id?: string
         }
