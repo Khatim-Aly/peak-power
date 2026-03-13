@@ -33,7 +33,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
       const productIds = [...new Set(cartItems.map(item => item.product_id))];
       supabase
         .from('products')
-        .select('id, name, price, image_url')
+        .select('id, name, price, image_url, stock')
         .in('id', productIds)
         .then(({ data }) => {
           if (data) {
