@@ -268,8 +268,7 @@ export default function JarScene() {
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 z-[1] pointer-events-none"
-      style={{ opacity: 1 }}
+      className="w-full h-full"
     >
       <Canvas
         camera={{ position: [0, 1, 5], fov: 40 }}
