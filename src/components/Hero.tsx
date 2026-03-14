@@ -2,8 +2,10 @@ import { motion } from "framer-motion";
 import { ArrowRight, Star, Shield, Leaf } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
-import heroProduct from "@/assets/hero-product.jpg";
 import heroBg from "@/assets/hero-bg.jpg";
+import { lazy, Suspense } from "react";
+
+const JarScene = lazy(() => import("@/components/JarScene"));
 
 const Hero = () => {
   const trustBadges = [
