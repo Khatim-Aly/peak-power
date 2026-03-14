@@ -262,7 +262,7 @@ export default function JarScene() {
       </div>
 
       {/* 3D Canvas */}
-      <div className="relative z-10 w-full max-w-lg h-[400px] md:h-[500px]">
+      <div className="relative z-10 w-full max-w-lg h-[500px] md:h-[650px]">
         <Canvas
           camera={{ position: [0, 0.5, 5.5], fov: 35 }}
           dpr={[1, 1.5]}
