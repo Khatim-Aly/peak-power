@@ -137,67 +137,53 @@ const Hero = () => {
             </motion.div>
           </motion.div>
 
-          {/* Product Image */}
+          {/* 3D Jar Scene */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="relative"
+            className="relative h-[400px] md:h-[500px] lg:h-[550px]"
           >
+            <Suspense fallback={
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full border-2 border-gold border-t-transparent animate-spin" />
+              </div>
+            }>
+              <div className="absolute inset-0 pointer-events-auto">
+                <JarScene />
+              </div>
+            </Suspense>
+
+            {/* Floating Badge */}
             <motion.div
-              animate={{ y: [-10, 10, -10] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              className="relative"
+              className="absolute top-4 right-4 badge-discount z-10"
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
             >
-              {/* Glow Effect Behind Product */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <motion.div
-                  className="w-80 h-80 rounded-full bg-gradient-gold opacity-20 blur-3xl"
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                />
-              </div>
-
-              {/* Product Container */}
-              <div className="relative glass-card p-4 lg:p-6 rounded-3xl shadow-premium">
-                <div className="aspect-square rounded-2xl overflow-hidden relative">
-                  <img 
-                    src={heroProduct} 
-                    alt="Pure Himalayan Shilajit" 
-                    className="w-full h-full object-cover image-zoom"
-                  />
-                  
-                  {/* Floating Elements */}
-                  <motion.div
-                    className="absolute top-4 right-4 badge-discount"
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    Up to 30% OFF
-                  </motion.div>
-                </div>
-
-                {/* Quick Stats */}
-                <div className="mt-6 grid grid-cols-3 gap-4">
-                  {[
-                    { value: "100%", label: "Pure" },
-                    { value: "5000m", label: "Altitude" },
-                    { value: "85+", label: "Minerals" },
-                  ].map((stat, index) => (
-                    <motion.div
-                      key={stat.label}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.8 + index * 0.1 }}
-                      className="text-center"
-                    >
-                      <div className="text-xl md:text-2xl font-bold text-gold">{stat.value}</div>
-                      <div className="text-xs text-muted-foreground">{stat.label}</div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
+              Up to 30% OFF
             </motion.div>
+
+            {/* Quick Stats Overlay */}
+            <div className="absolute bottom-0 left-0 right-0 glass-card p-4 rounded-2xl z-10">
+              <div className="grid grid-cols-3 gap-4">
+                {[
+                  { value: "100%", label: "Pure" },
+                  { value: "5000m", label: "Altitude" },
+                  { value: "85+", label: "Minerals" },
+                ].map((stat, index) => (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8 + index * 0.1 }}
+                    className="text-center"
+                  >
+                    <div className="text-xl md:text-2xl font-bold text-gold">{stat.value}</div>
+                    <div className="text-xs text-muted-foreground">{stat.label}</div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>
