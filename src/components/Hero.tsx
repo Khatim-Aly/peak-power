@@ -2,10 +2,8 @@ import { motion } from "framer-motion";
 import { ArrowRight, Star, Shield, Leaf } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
+import heroProduct from "@/assets/hero-product.jpg";
 import heroBg from "@/assets/hero-bg.jpg";
-import { lazy, Suspense } from "react";
-
-const JarScene = lazy(() => import("@/components/JarScene"));
 
 const Hero = () => {
   const trustBadges = [
@@ -16,51 +14,31 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Background Image */}
       <div className="absolute inset-0">
         <img src={heroBg} alt="" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-background/70 dark:bg-background/80" />
         <div className="absolute inset-0 bg-gradient-to-br from-background/60 via-transparent to-muted/40" />
       </div>
-      
-      {/* Animated Gold Orb */}
+
       <motion.div
         className="absolute top-1/4 right-1/4 w-96 h-96 rounded-full bg-gradient-radial-gold opacity-50 blur-3xl"
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
+        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
       />
-      
-      {/* Second Orb */}
       <motion.div
         className="absolute bottom-1/4 left-1/4 w-72 h-72 rounded-full bg-gradient-radial-gold opacity-30 blur-3xl"
-        animate={{
-          scale: [1.2, 1, 1.2],
-          opacity: [0.2, 0.4, 0.2],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
+        animate={{ scale: [1.2, 1, 1.2], opacity: [0.2, 0.4, 0.2] }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
       />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="text-center lg:text-left"
           >
-            {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -71,7 +49,6 @@ const Hero = () => {
               <span className="text-sm font-medium text-gold">Ancient Himalayan Secret</span>
             </motion.div>
 
-            {/* Headline */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -84,7 +61,6 @@ const Hero = () => {
               Vitality
             </motion.h1>
 
-            {/* Subheadline */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -95,7 +71,6 @@ const Hero = () => {
               Gilgit-Baltistan to boost your energy, strength, and wellness naturally.
             </motion.p>
 
-            {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -109,13 +84,10 @@ const Hero = () => {
                 </Link>
               </Button>
               <Button variant="premium" size="xl" asChild>
-                <Link to="/about">
-                  Learn More
-                </Link>
+                <Link to="/about">Learn More</Link>
               </Button>
             </motion.div>
 
-            {/* Trust Badges */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -137,53 +109,56 @@ const Hero = () => {
             </motion.div>
           </motion.div>
 
-          {/* 3D Jar Scene */}
+          {/* Product Image */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="relative h-[400px] md:h-[500px] lg:h-[550px]"
+            className="relative"
           >
-            <Suspense fallback={
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="w-16 h-16 rounded-full border-2 border-gold border-t-transparent animate-spin" />
-              </div>
-            }>
-              <div className="absolute inset-0 pointer-events-auto">
-                <JarScene />
-              </div>
-            </Suspense>
-
-            {/* Floating Badge */}
             <motion.div
-              className="absolute top-4 right-4 badge-discount z-10"
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              animate={{ y: [-10, 10, -10] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              className="relative"
             >
-              Up to 30% OFF
-            </motion.div>
-
-            {/* Quick Stats Overlay */}
-            <div className="absolute bottom-0 left-0 right-0 glass-card p-4 rounded-2xl z-10">
-              <div className="grid grid-cols-3 gap-4">
-                {[
-                  { value: "100%", label: "Pure" },
-                  { value: "5000m", label: "Altitude" },
-                  { value: "85+", label: "Minerals" },
-                ].map((stat, index) => (
-                  <motion.div
-                    key={stat.label}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8 + index * 0.1 }}
-                    className="text-center"
-                  >
-                    <div className="text-xl md:text-2xl font-bold text-gold">{stat.value}</div>
-                    <div className="text-xs text-muted-foreground">{stat.label}</div>
-                  </motion.div>
-                ))}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <motion.div
+                  className="w-80 h-80 rounded-full bg-gradient-gold opacity-20 blur-3xl"
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                />
               </div>
-            </div>
+              <div className="relative glass-card p-4 lg:p-6 rounded-3xl shadow-premium">
+                <div className="aspect-square rounded-2xl overflow-hidden relative">
+                  <img src={heroProduct} alt="Pure Himalayan Shilajit" className="w-full h-full object-cover image-zoom" />
+                  <motion.div
+                    className="absolute top-4 right-4 badge-discount"
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    Up to 30% OFF
+                  </motion.div>
+                </div>
+                <div className="mt-6 grid grid-cols-3 gap-4">
+                  {[
+                    { value: "100%", label: "Pure" },
+                    { value: "5000m", label: "Altitude" },
+                    { value: "85+", label: "Minerals" },
+                  ].map((stat, index) => (
+                    <motion.div
+                      key={stat.label}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.8 + index * 0.1 }}
+                      className="text-center"
+                    >
+                      <div className="text-xl md:text-2xl font-bold text-gold">{stat.value}</div>
+                      <div className="text-xs text-muted-foreground">{stat.label}</div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>
