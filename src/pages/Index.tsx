@@ -12,22 +12,25 @@ const JarScene = lazy(() => import("@/components/JarScene"));
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
-      <Navigation />
-      <Hero />
-      <Suspense fallback={
-        <div className="min-h-screen flex items-center justify-center bg-background">
-          <div className="w-16 h-16 rounded-full border-2 border-gold border-t-transparent animate-spin" />
-        </div>
-      }>
+    <div className="min-h-screen relative">
+      {/* 3D jar background - fixed behind content below hero */}
+      <Suspense fallback={null}>
         <JarScene />
       </Suspense>
-      <Benefits />
-      <ProductCard />
-      <TrustBadges />
-      <Testimonials />
-      <CTASection />
-      <Footer />
+
+      {/* Hero keeps its own background */}
+      <Navigation />
+      <Hero />
+
+      {/* Content sections with semi-transparent backgrounds so 3D shows through */}
+      <div className="relative z-10">
+        <Benefits />
+        <ProductCard />
+        <TrustBadges />
+        <Testimonials />
+        <CTASection />
+        <Footer />
+      </div>
     </div>
   );
 };
