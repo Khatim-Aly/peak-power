@@ -220,12 +220,12 @@ export default function JarScene() {
   }, []);
 
   return (
-    <div className="fixed inset-0 top-[100vh] z-0 pointer-events-none">
+    <div className="fixed inset-0 z-0 pointer-events-none w-full h-screen">
       <Canvas
         camera={{ position: [0, 0.5, 5.5], fov: 35 }}
         dpr={[1, 1.5]}
         gl={{ antialias: true, alpha: true }}
-        style={{ background: "transparent" }}
+        style={{ background: "transparent", width: "100%", height: "100%" }}
       >
         <Scene scrollProgress={scrollProgress} />
       </Canvas>
