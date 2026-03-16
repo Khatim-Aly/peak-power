@@ -23,7 +23,7 @@ const Index = () => {
       <Hero />
 
       {/* Content sections with semi-transparent backgrounds so 3D shows through */}
-      <div className="relative z-10">
+      <div className="relative z-10 [&>section]:bg-background/80 [&>section]:backdrop-blur-sm">
         <Benefits />
         <ProductCard />
         <TrustBadges />
