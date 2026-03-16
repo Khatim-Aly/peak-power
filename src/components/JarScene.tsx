@@ -5,7 +5,6 @@ import * as THREE from "three";
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-/* Realistic dark resin jar body */
 function JarBody() {
   const points = useMemo(() => {
     const pts: THREE.Vector2[] = [];
@@ -45,7 +44,6 @@ function JarBody() {
   );
 }
 
-/* Dark shilajit resin inside */
 function JarContent() {
   return (
     <mesh position={[0, -0.1, 0]}>
@@ -55,7 +53,6 @@ function JarContent() {
   );
 }
 
-/* Gold label band around jar */
 function JarLabel() {
   return (
     <mesh position={[0, 0.15, 0]}>
@@ -70,7 +67,6 @@ function JarLabel() {
   );
 }
 
-/* Cap with gold top and dark body */
 function Cap({ scrollProgress }: { scrollProgress: number }) {
   const capRef = useRef<THREE.Group>(null);
   const curr = useRef({ rot: 0, y: 0, z: 0 });
@@ -92,22 +88,14 @@ function Cap({ scrollProgress }: { scrollProgress: number }) {
 
   return (
     <group ref={capRef} position={[0, 1.2, 0]}>
-      {/* Cap body */}
       <mesh castShadow>
         <cylinderGeometry args={[0.78, 0.76, 0.3, 64]} />
-        <meshPhysicalMaterial
-          color="#111111"
-          roughness={0.25}
-          metalness={0.8}
-          clearcoat={0.5}
-        />
+        <meshPhysicalMaterial color="#111111" roughness={0.25} metalness={0.8} clearcoat={0.5} />
       </mesh>
-      {/* Gold top disc */}
       <mesh position={[0, 0.16, 0]}>
         <cylinderGeometry args={[0.72, 0.78, 0.02, 64]} />
         <meshStandardMaterial color="#c9961a" roughness={0.2} metalness={0.9} />
       </mesh>
-      {/* Grip ridges */}
       {Array.from({ length: 36 }).map((_, i) => {
         const angle = (i / 36) * Math.PI * 2;
         return (
@@ -125,7 +113,6 @@ function Cap({ scrollProgress }: { scrollProgress: number }) {
   );
 }
 
-/* Golden particles that emerge when jar opens */
 function GoldenParticles({ scrollProgress }: { scrollProgress: number }) {
   const ref = useRef<THREE.Points>(null);
   const count = 80;
@@ -186,7 +173,6 @@ function Scene({ scrollProgress }: { scrollProgress: number }) {
 
   useFrame((state) => {
     if (!groupRef.current) return;
-    // Slow continuous rotation + extra rotation on scroll
     groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.15 + scrollProgress * 1.2;
   });
 
@@ -216,20 +202,15 @@ function Scene({ scrollProgress }: { scrollProgress: number }) {
 
 export default function JarScene() {
   const [scrollProgress, setScrollProgress] = useState(0);
-  const sectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    const section = document.getElementById("jar-experience");
-    sectionRef.current = section;
-
     const handleScroll = () => {
-      if (!sectionRef.current) return;
-      const rect = sectionRef.current.getBoundingClientRect();
-      const sectionHeight = sectionRef.current.offsetHeight;
-      const viewH = window.innerHeight;
-
-      // Progress: 0 when section top hits viewport bottom, 1 when section bottom hits viewport top
-      const progress = 1 - (rect.bottom - viewH * 0.3) / (sectionHeight + viewH * 0.4);
+      const heroHeight = window.innerHeight;
+      const scrollY = window.scrollY;
+      // Start tracking after hero section, progress over the next 2 viewports
+      const start = heroHeight;
+      const range = window.innerHeight * 2;
+      const progress = (scrollY - start) / range;
       setScrollProgress(Math.min(1, Math.max(0, progress)));
     };
 
@@ -239,46 +220,15 @@ export default function JarScene() {
   }, []);
 
   return (
-    <section
-      id="jar-experience"
-      className="relative min-h-[80vh] md:min-h-screen flex flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-background via-card to-background py-20"
-    >
-      {/* Background glow */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-3xl opacity-20"
-          style={{ background: "radial-gradient(circle, hsl(var(--gold)), transparent 70%)" }}
-        />
-      </div>
-
-      {/* Section Header */}
-      <div className="relative z-10 text-center mb-4 md:mb-8 px-4">
-        <h2 className="text-3xl md:text-5xl font-serif font-bold mb-3">
-          Discover the <span className="text-gradient-gold">Essence</span>
-        </h2>
-        <p className="text-muted-foreground text-base md:text-lg max-w-md mx-auto">
-          Scroll to unveil the pure Himalayan Shilajit within
-        </p>
-      </div>
-
-      {/* 3D Canvas */}
-      <div className="relative z-10 w-full max-w-lg h-[500px] md:h-[650px]">
-        <Canvas
-          camera={{ position: [0, 0.5, 5.5], fov: 35 }}
-          dpr={[1, 1.5]}
-          gl={{ antialias: true, alpha: true }}
-          style={{ background: "transparent" }}
-        >
-          <Scene scrollProgress={scrollProgress} />
-        </Canvas>
-      </div>
-
-      {/* Scroll hint */}
-      <div className="relative z-10 mt-4 text-center">
-        <p className="text-xs text-muted-foreground animate-bounce-subtle">
-          {scrollProgress < 0.5 ? "↓ Scroll down to open" : "↑ Scroll up to close"}
-        </p>
-      </div>
-    </section>
+    <div className="fixed inset-0 top-[100vh] z-0 pointer-events-none">
+      <Canvas
+        camera={{ position: [0, 0.5, 5.5], fov: 35 }}
+        dpr={[1, 1.5]}
+        gl={{ antialias: true, alpha: true }}
+        style={{ background: "transparent" }}
+      >
+        <Scene scrollProgress={scrollProgress} />
+      </Canvas>
+    </div>
   );
 }
