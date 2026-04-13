@@ -3,13 +3,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, ArrowRight } from "lucide-react";
+import { Loader2, ArrowRight, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FloatingLabelInput } from "./FloatingLabelInput";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { lovable } from "@/integrations/lovable";
-
+import { checkRateLimit, resetRateLimit, getSafeErrorMessage } from "@/lib/security";
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
   password: z.string().min(1, "Password is required"),
@@ -67,6 +67,17 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
   const onSubmit = async (data: LoginFormData) => {
     if (cooldown) return;
 
+    // SECURITY: Client-side rate limiting with exponential backoff
+    const rateCheck = checkRateLimit(`login:${data.email}`, 5, 15 * 60 * 1000);
+    if (!rateCheck.allowed) {
+      toast({
+        variant: "destructive",
+        title: "Too many attempts",
+        description: rateCheck.message,
+      });
+      return;
+    }
+
     setIsLoading(true);
     const { error } = await signIn(data.email, data.password);
 
@@ -75,15 +86,20 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
       setCooldown(true);
       setTimeout(() => setCooldown(false), 3000);
 
-      setError("root", { message: error.message });
+      // SECURITY: Use safe error messages to prevent user enumeration
+      const safeMessage = getSafeErrorMessage(error);
+      setError("root", { message: safeMessage });
 
       toast({
         variant: "destructive",
         title: "Login failed",
-        description: error.message,
+        description: safeMessage,
       });
       return;
     }
+
+    // SECURITY: Reset rate limit on success
+    resetRateLimit(`login:${data.email}`);
 
     toast({
       title: "Welcome back! 👋",
@@ -100,16 +116,25 @@ export const LoginForm = ({ onSuccess, onSwitchToSignup }: LoginFormProps) => {
       toast({ variant: "destructive", title: "Please enter your email address" });
       return;
     }
+
+    // SECURITY: Rate limit password reset to prevent abuse
+    const rateCheck = checkRateLimit(`reset:${forgotEmail}`, 3, 15 * 60 * 1000);
+    if (!rateCheck.allowed) {
+      toast({ variant: "destructive", title: "Too many attempts", description: rateCheck.message });
+      return;
+    }
+
     setIsSendingReset(true);
     const { error } = await resetPassword(forgotEmail);
     setIsSendingReset(false);
     if (error) {
-      toast({ variant: "destructive", title: "Failed to send reset link", description: error.message });
+      // SECURITY: Don't reveal if email exists — always show success
+      toast({ title: "Reset link sent! 📧", description: "If an account exists with this email, you'll receive a reset link." });
     } else {
-      toast({ title: "Reset link sent! 📧", description: "Check your email for the password reset link." });
-      setShowForgotPassword(false);
-      setForgotEmail("");
+      toast({ title: "Reset link sent! 📧", description: "If an account exists with this email, you'll receive a reset link." });
     }
+    setShowForgotPassword(false);
+    setForgotEmail("");
   };
 
   if (showForgotPassword) {

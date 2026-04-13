@@ -3,6 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- SECURITY HEADERS -->
+    <!-- Content Security Policy: Prevents XSS by restricting script/style sources -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.supabase.co https://*.lovableproject.com https://*.lovable.app; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.lovableproject.com https://*.lovable.app; frame-ancestors 'self' https://*.lovable.app; base-uri 'self'; form-action 'self';" />
+    <!-- Prevent clickjacking -->
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
+    <!-- Prevent MIME type sniffing -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <!-- Control referrer information sent with requests -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <title>PeakPower GB | Pure Himalayan Shilajit from Gilgit-Baltistan</title>
     <meta name="description" content="Experience the power of 100% authentic Himalayan Shilajit from Gilgit-Baltistan. Lab-tested, pure resin rich in 85+ minerals and fulvic acid. Boost energy, strength & vitality naturally." />
     <meta name="author" content="PeakPower GB" />
