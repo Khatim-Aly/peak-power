@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, ArrowRight, CheckCircle } from "lucide-react";
+import { checkRateLimit, getSafeErrorMessage } from "@/lib/security";
 import { Button } from "@/components/ui/button";
 import { FloatingLabelInput } from "./FloatingLabelInput";
 import { PasswordStrengthMeter } from "./PasswordStrengthMeter";
@@ -59,6 +60,13 @@ export const SignupForm = ({ onSuccess, onSwitchToLogin }: SignupFormProps) => {
   const passwordsMatch = password && confirmPassword && password === confirmPassword;
 
   const onSubmit = async (data: SignupFormData) => {
+    // SECURITY: Rate limit signups to prevent abuse
+    const rateCheck = checkRateLimit(`signup:${data.email}`, 3, 15 * 60 * 1000);
+    if (!rateCheck.allowed) {
+      toast({ variant: "destructive", title: "Too many attempts", description: rateCheck.message });
+      return;
+    }
+
     setIsLoading(true);
     // SECURITY: Always pass 'user' role - server ignores this anyway
     const { error } = await signUp(data.email, data.password, 'user', data.fullName);
@@ -68,7 +76,7 @@ export const SignupForm = ({ onSuccess, onSwitchToLogin }: SignupFormProps) => {
       toast({
         variant: "destructive",
         title: "Signup failed",
-        description: error.message,
+        description: getSafeErrorMessage(error),
       });
       return;
     }
