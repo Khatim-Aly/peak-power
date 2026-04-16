@@ -356,6 +356,7 @@ export type Database = {
           code: string
           created_at: string
           discount_percent: number | null
+          exit_intent_timer_minutes: number
           expires_at: string
           free_shipping_threshold: number | null
           id: string
@@ -364,6 +365,7 @@ export type Database = {
           merchant_id: string | null
           product_id: string | null
           scope: string
+          show_on_exit_intent: boolean
           starts_at: string
           status: Database["public"]["Enums"]["promo_status"]
           updated_at: string
@@ -373,6 +375,7 @@ export type Database = {
           code: string
           created_at?: string
           discount_percent?: number | null
+          exit_intent_timer_minutes?: number
           expires_at: string
           free_shipping_threshold?: number | null
           id?: string
@@ -381,6 +384,7 @@ export type Database = {
           merchant_id?: string | null
           product_id?: string | null
           scope?: string
+          show_on_exit_intent?: boolean
           starts_at?: string
           status?: Database["public"]["Enums"]["promo_status"]
           updated_at?: string
@@ -390,6 +394,7 @@ export type Database = {
           code?: string
           created_at?: string
           discount_percent?: number | null
+          exit_intent_timer_minutes?: number
           expires_at?: string
           free_shipping_threshold?: number | null
           id?: string
@@ -398,6 +403,7 @@ export type Database = {
           merchant_id?: string | null
           product_id?: string | null
           scope?: string
+          show_on_exit_intent?: boolean
           starts_at?: string
           status?: Database["public"]["Enums"]["promo_status"]
           updated_at?: string
