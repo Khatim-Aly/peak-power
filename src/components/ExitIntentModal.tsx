@@ -4,20 +4,59 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Gift, MessageCircle, Clock, Mail } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { supabase } from "@/integrations/supabase/client";
 import { conversionConfig } from "@/lib/conversionConfig";
 
 const SESSION_KEY = "ppgb_exit_intent_shown";
+
+interface ExitPromo {
+  code: string;
+  discount_percent: number;
+  exit_intent_timer_minutes: number;
+}
 
 const ExitIntentModal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [copied, setCopied] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(conversionConfig.exitIntent.countdownMinutes * 60);
+  const [promo, setPromo] = useState<ExitPromo | null>(null);
+  const [timeLeft, setTimeLeft] = useState(0);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const timerStarted = useRef(false);
+  const promoFetched = useRef(false);
 
-  const discountCode = "PEAK10";
-  const { discountPercent, whatsappNumber, idleTimeoutMs } = conversionConfig.exitIntent;
+  const { whatsappNumber, idleTimeoutMs } = conversionConfig.exitIntent;
+
+  // Fetch admin-configured exit-intent promo code
+  useEffect(() => {
+    if (promoFetched.current) return;
+    promoFetched.current = true;
+
+    supabase
+      .from("promo_codes")
+      .select("code, discount_percent, exit_intent_timer_minutes")
+      .eq("show_on_exit_intent", true)
+      .eq("is_active", true)
+      .eq("status", "approved")
+      .lte("starts_at", new Date().toISOString())
+      .gt("expires_at", new Date().toISOString())
+      .limit(1)
+      .single()
+      .then(({ data }) => {
+        if (data) {
+          setPromo(data as ExitPromo);
+          setTimeLeft((data as ExitPromo).exit_intent_timer_minutes * 60);
+        } else {
+          // Fallback to config defaults
+          setPromo({
+            code: "PEAK10",
+            discount_percent: conversionConfig.exitIntent.discountPercent,
+            exit_intent_timer_minutes: conversionConfig.exitIntent.countdownMinutes,
+          });
+          setTimeLeft(conversionConfig.exitIntent.countdownMinutes * 60);
+        }
+      });
+  }, []);
 
   const showModal = useCallback(() => {
     if (sessionStorage.getItem(SESSION_KEY)) return;
@@ -75,17 +114,19 @@ const ExitIntentModal = () => {
   };
 
   const handleCopyCode = () => {
-    navigator.clipboard.writeText(discountCode);
+    if (!promo) return;
+    navigator.clipboard.writeText(promo.code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleWhatsApp = () => {
-    const msg = encodeURIComponent(`Hi! I'd like to use my ${discountPercent}% discount code: ${discountCode}`);
+    if (!promo) return;
+    const msg = encodeURIComponent(`Hi! I'd like to use my ${promo.discount_percent}% discount code: ${promo.code}`);
     window.open(`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, "")}?text=${msg}`, "_blank", "noopener,noreferrer");
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !promo) return null;
 
   return createPortal(
     <AnimatePresence>
@@ -127,7 +168,7 @@ const ExitIntentModal = () => {
             {/* Discount badge */}
             <div className="text-center">
               <div className="inline-flex items-center gap-2 bg-gold/10 border border-gold/20 rounded-full px-5 py-2.5">
-                <span className="text-3xl font-bold text-gold">{discountPercent}% OFF</span>
+                <span className="text-3xl font-bold text-gold">{promo.discount_percent}% OFF</span>
               </div>
               <p className="text-sm text-muted-foreground mt-2">Use code at checkout</p>
             </div>
@@ -137,7 +178,7 @@ const ExitIntentModal = () => {
               onClick={handleCopyCode}
               className="w-full flex items-center justify-between p-3 rounded-xl border-2 border-dashed border-gold/40 bg-gold/5 hover:bg-gold/10 transition-colors group"
             >
-              <span className="font-mono font-bold text-lg tracking-widest text-gold">{discountCode}</span>
+              <span className="font-mono font-bold text-lg tracking-widest text-gold">{promo.code}</span>
               <span className="text-xs text-muted-foreground group-hover:text-gold transition-colors">
                 {copied ? "✓ Copied!" : "Tap to copy"}
               </span>

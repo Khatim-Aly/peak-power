@@ -12,7 +12,10 @@ import {
   User,
   Mail,
   Home,
-  Building
+  Building,
+  Tag,
+  X,
+  Loader2
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
