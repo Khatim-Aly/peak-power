@@ -12,6 +12,7 @@ import {
   ChevronUp
 } from "lucide-react";
 import { DashboardLayout } from "./DashboardLayout";
+import { PromoCodeManager } from "./PromoCodeManager";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -300,6 +301,10 @@ export const MerchantDashboard = () => {
             })}
           </div>
         )}
+      </div>
+      {/* Promo Codes */}
+      <div className="mt-8">
+        <PromoCodeManager isAdmin={false} merchantId={profile?.user_id} />
       </div>
     </DashboardLayout>
   );

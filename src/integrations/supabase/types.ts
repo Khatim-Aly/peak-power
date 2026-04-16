@@ -351,6 +351,68 @@ export type Database = {
         }
         Relationships: []
       }
+      promo_codes: {
+        Row: {
+          code: string
+          created_at: string
+          discount_percent: number | null
+          expires_at: string
+          free_shipping_threshold: number | null
+          id: string
+          is_active: boolean
+          max_uses: number | null
+          merchant_id: string | null
+          product_id: string | null
+          scope: string
+          starts_at: string
+          status: Database["public"]["Enums"]["promo_status"]
+          updated_at: string
+          used_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          discount_percent?: number | null
+          expires_at: string
+          free_shipping_threshold?: number | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          merchant_id?: string | null
+          product_id?: string | null
+          scope?: string
+          starts_at?: string
+          status?: Database["public"]["Enums"]["promo_status"]
+          updated_at?: string
+          used_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          discount_percent?: number | null
+          expires_at?: string
+          free_shipping_threshold?: number | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          merchant_id?: string | null
+          product_id?: string | null
+          scope?: string
+          starts_at?: string
+          status?: Database["public"]["Enums"]["promo_status"]
+          updated_at?: string
+          used_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promo_codes_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shipping_fees: {
         Row: {
           city: string
@@ -433,6 +495,7 @@ export type Database = {
         | "shipped"
         | "delivered"
         | "cancelled"
+      promo_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -569,6 +632,7 @@ export const Constants = {
         "delivered",
         "cancelled",
       ],
+      promo_status: ["pending", "approved", "rejected"],
     },
   },
 } as const
