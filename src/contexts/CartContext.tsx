@@ -1,5 +1,6 @@
-import { createContext, useContext, ReactNode } from "react";
+import { createContext, useContext, ReactNode, useState, useCallback } from "react";
 import { useCart, CartItem } from "@/hooks/useCart";
+import AddToCartFeedback from "@/components/AddToCartFeedback";
 
 interface CartContextType {
   cartItems: CartItem[];
@@ -16,15 +17,29 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | null>(null);
 
-import { useState } from "react";
-
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const cart = useCart();
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [feedbackProduct, setFeedbackProduct] = useState<string | undefined>();
+  const [showFeedback, setShowFeedback] = useState(false);
+
+  const wrappedAddToCart = useCallback(async (productId: string, quantity?: number, variant?: string) => {
+    const result = await cart.addToCart(productId, quantity, variant);
+    if (!result.error) {
+      setFeedbackProduct(undefined); // Will show generic "Added to Cart"
+      setShowFeedback(true);
+    }
+    return result;
+  }, [cart.addToCart]);
 
   return (
-    <CartContext.Provider value={{ ...cart, isCartOpen, setIsCartOpen }}>
+    <CartContext.Provider value={{ ...cart, addToCart: wrappedAddToCart, isCartOpen, setIsCartOpen }}>
       {children}
+      <AddToCartFeedback
+        show={showFeedback}
+        productName={feedbackProduct}
+        onDone={() => setShowFeedback(false)}
+      />
     </CartContext.Provider>
   );
 };

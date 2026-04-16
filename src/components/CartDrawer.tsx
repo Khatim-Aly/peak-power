@@ -8,6 +8,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import CartFreeShippingBar from "./CartFreeShippingBar";
+import CartUpsells from "./CartUpsells";
+import CartTrustBadges from "./CartTrustBadges";
 
 interface Product {
   id: string;
@@ -175,12 +178,28 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
               )}
             </div>
 
+            {/* Upsells & Trust */}
+            {user && cartItems.length > 0 && (
+              <div className="px-6 pb-2 space-y-3">
+                <CartUpsells />
+                <CartTrustBadges />
+              </div>
+            )}
+
             {/* Footer */}
             {user && cartItems.length > 0 && (
-              <div className="p-6 border-t border-border space-y-4">
+              <div className="p-6 border-t border-border space-y-3">
+                <CartFreeShippingBar subtotal={total} />
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Subtotal</span>
                   <span className="text-xl font-bold text-gold">PKR {total.toFixed(2)}</span>
+                </div>
+                {/* Mini testimonial */}
+                <div className="text-center py-1.5 px-3 rounded-lg bg-gold/5 border border-gold/10">
+                  <p className="text-[10px] text-muted-foreground italic">
+                    "Best quality Shilajit I've ever tried. Noticed results in a week!"
+                  </p>
+                  <p className="text-[9px] text-gold mt-0.5">— Verified Buyer ★★★★★</p>
                 </div>
                 <Button variant="hero" className="w-full" size="lg" asChild onClick={onClose}>
                   <Link to="/checkout">Proceed to Checkout</Link>
