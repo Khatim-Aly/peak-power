@@ -19,6 +19,7 @@ import {
 import { DashboardLayout } from "./DashboardLayout";
 import { ShippingFeesManager } from "./ShippingFeesManager";
 import { UserEditModal } from "./UserEditModal";
+import { PromoCodeManager } from "./PromoCodeManager";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -276,6 +277,11 @@ export const AdminDashboard = () => {
             </>
           )}
         </Tabs>
+      </div>
+
+      {/* Promo Codes Manager */}
+      <div className="mt-8">
+        <PromoCodeManager isAdmin={true} />
       </div>
 
       {/* Shipping Fees Manager */}
