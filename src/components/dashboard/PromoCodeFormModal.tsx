@@ -28,6 +28,8 @@ interface PromoCode {
   max_uses: number | null;
   used_count: number;
   is_active: boolean;
+  show_on_exit_intent: boolean;
+  exit_intent_timer_minutes: number;
 }
 
 interface PromoCodeFormModalProps {
@@ -58,6 +60,8 @@ export const PromoCodeFormModal = ({
   const [isActive, setIsActive] = useState(true);
   const [products, setProducts] = useState<{ id: string; name: string }[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [showOnExitIntent, setShowOnExitIntent] = useState(false);
+  const [exitIntentTimer, setExitIntentTimer] = useState("15");
 
   useEffect(() => {
     if (isOpen) {
@@ -72,6 +76,8 @@ export const PromoCodeFormModal = ({
         setExpiresAt(editingCode.expires_at ? new Date(editingCode.expires_at).toISOString().slice(0, 16) : "");
         setMaxUses(editingCode.max_uses ? String(editingCode.max_uses) : "");
         setIsActive(editingCode.is_active);
+        setShowOnExitIntent(editingCode.show_on_exit_intent || false);
+        setExitIntentTimer(String(editingCode.exit_intent_timer_minutes || 15));
       } else {
         resetForm();
       }
@@ -90,6 +96,8 @@ export const PromoCodeFormModal = ({
     setExpiresAt(defaultExpiry.toISOString().slice(0, 16));
     setMaxUses("");
     setIsActive(true);
+    setShowOnExitIntent(false);
+    setExitIntentTimer("15");
   };
 
   const fetchProducts = async () => {
@@ -115,6 +123,8 @@ export const PromoCodeFormModal = ({
       expires_at: expiresAt,
       max_uses: maxUses ? Number(maxUses) : null,
       is_active: isActive,
+      show_on_exit_intent: isAdmin ? showOnExitIntent : false,
+      exit_intent_timer_minutes: Number(exitIntentTimer) || 15,
     };
 
     // Admin-created codes are auto-approved; merchant codes are pending
@@ -272,6 +282,35 @@ export const PromoCodeFormModal = ({
               <Label>Active</Label>
               <Switch checked={isActive} onCheckedChange={setIsActive} />
             </div>
+
+            {/* Exit Intent Settings (admin only) */}
+            {isAdmin && (
+              <div className="space-y-4 p-4 rounded-xl bg-gold/5 border border-gold/20">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm font-medium">Show on Exit-Intent Modal</Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">Display this code when users try to leave</p>
+                  </div>
+                  <Switch checked={showOnExitIntent} onCheckedChange={setShowOnExitIntent} />
+                </div>
+                {showOnExitIntent && (
+                  <div className="space-y-2">
+                    <Label className="text-xs">Countdown Timer (minutes)</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="60"
+                      value={exitIntentTimer}
+                      onChange={(e) => setExitIntentTimer(e.target.value)}
+                      placeholder="15"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      ⚠️ Only one promo code can be shown on the exit-intent modal at a time. Enabling this will replace any existing one.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
 
             {!isAdmin && !editingCode && (
               <p className="text-xs text-muted-foreground bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
