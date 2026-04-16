@@ -12,7 +12,10 @@ import {
   User,
   Mail,
   Home,
-  Building
+  Building,
+  Tag,
+  X,
+  Loader2
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
@@ -73,6 +76,12 @@ const Checkout = () => {
   const [shippingFees, setShippingFees] = useState<ShippingFee[]>([]);
   const [selectedShippingFee, setSelectedShippingFee] = useState<number>(0);
   const [checkoutItems, setCheckoutItems] = useState<CheckoutCartItem[]>([]);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoDiscount, setPromoDiscount] = useState(0);
+  const [promoFreeShipping, setPromoFreeShipping] = useState(false);
+  const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoError, setPromoError] = useState("");
 
   // Redirect unauthenticated users
   useEffect(() => {
@@ -146,12 +155,57 @@ const Checkout = () => {
   ];
 
   const subtotal = checkoutItems.reduce((acc, item) => acc + (item.product?.price || 0) * item.quantity, 0);
-  const shipping = selectedShippingFee;
-  const total = subtotal + shipping;
+  const discountAmount = promoDiscount > 0 ? Math.round(subtotal * promoDiscount / 100) : 0;
+  const effectiveShipping = promoFreeShipping && subtotal > 0 ? 0 : selectedShippingFee;
+  const total = subtotal - discountAmount + effectiveShipping;
   const totalSavings = checkoutItems.reduce(
     (acc, item) => acc + ((item.product?.original_price || item.product?.price || 0) - (item.product?.price || 0)) * item.quantity,
     0
-  );
+  ) + discountAmount;
+
+  const handleApplyPromo = async () => {
+    if (!promoCode.trim()) return;
+    setPromoLoading(true);
+    setPromoError("");
+
+    const { data, error } = await supabase
+      .from("promo_codes")
+      .select("code, discount_percent, free_shipping_threshold, scope, max_uses, used_count")
+      .eq("code", promoCode.trim().toUpperCase())
+      .eq("is_active", true)
+      .eq("status", "approved")
+      .lte("starts_at", new Date().toISOString())
+      .gt("expires_at", new Date().toISOString())
+      .maybeSingle();
+
+    setPromoLoading(false);
+
+    if (error || !data) {
+      setPromoError("Invalid or expired promo code");
+      setPromoDiscount(0);
+      setPromoFreeShipping(false);
+      setAppliedPromo(null);
+      return;
+    }
+
+    if (data.max_uses && data.used_count >= data.max_uses) {
+      setPromoError("This promo code has reached its usage limit");
+      return;
+    }
+
+    setPromoDiscount(data.discount_percent || 0);
+    setPromoFreeShipping(data.free_shipping_threshold != null && subtotal >= Number(data.free_shipping_threshold));
+    setAppliedPromo(data.code);
+    toast({ title: "Promo Applied! 🎉", description: `${data.discount_percent}% discount applied` });
+  };
+
+  const handleRemovePromo = () => {
+    setPromoCode("");
+    setPromoDiscount(0);
+    setPromoFreeShipping(false);
+    setAppliedPromo(null);
+    setPromoError("");
+  };
 
   const updateQuantity = (id: string, newQuantity: number) => {
     if (newQuantity < 1) return;
@@ -668,14 +722,64 @@ const Checkout = () => {
                   ))}
 
                   <div className="space-y-3 mb-4">
+                    {/* Promo Code Input */}
+                    <div className="mb-4">
+                      {appliedPromo ? (
+                        <div className="flex items-center justify-between p-3 rounded-xl bg-gold/10 border border-gold/20">
+                          <div className="flex items-center gap-2">
+                            <Tag className="w-4 h-4 text-gold" />
+                            <span className="font-mono font-bold text-gold text-sm">{appliedPromo}</span>
+                            <span className="text-xs text-muted-foreground">(-{promoDiscount}%)</span>
+                          </div>
+                          <button onClick={handleRemovePromo} className="text-muted-foreground hover:text-foreground transition-colors">
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <div className="flex gap-2">
+                            <div className="relative flex-1">
+                              <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                              <Input
+                                value={promoCode}
+                                onChange={(e) => { setPromoCode(e.target.value.toUpperCase()); setPromoError(""); }}
+                                placeholder="Enter promo code"
+                                className="pl-10 h-10 rounded-xl uppercase font-mono text-sm"
+                              />
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="default"
+                              onClick={handleApplyPromo}
+                              disabled={promoLoading || !promoCode.trim()}
+                              className="rounded-xl h-10 text-sm"
+                            >
+                              {promoLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Apply"}
+                            </Button>
+                          </div>
+                          {promoError && (
+                            <p className="text-xs text-destructive">{promoError}</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Subtotal</span>
                       <span>PKR {subtotal.toLocaleString()}</span>
                     </div>
+                    {discountAmount > 0 && (
+                      <div className="flex justify-between text-sm text-gold">
+                        <span>Promo Discount ({promoDiscount}%)</span>
+                        <span>-PKR {discountAmount.toLocaleString()}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Shipping</span>
-                      {shipping > 0 ? (
-                        <span className="font-semibold">PKR {shipping.toLocaleString()}</span>
+                      {promoFreeShipping ? (
+                        <span className="text-gold font-semibold">FREE (promo)</span>
+                      ) : effectiveShipping > 0 ? (
+                        <span className="font-semibold">PKR {effectiveShipping.toLocaleString()}</span>
                       ) : shippingInfo.city ? (
                         <span className="text-gold font-semibold">FREE</span>
                       ) : (

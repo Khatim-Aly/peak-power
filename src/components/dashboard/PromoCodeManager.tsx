@@ -43,6 +43,8 @@ interface PromoCode {
   used_count: number;
   is_active: boolean;
   created_at: string;
+  show_on_exit_intent: boolean;
+  exit_intent_timer_minutes: number;
 }
 
 interface PromoCodeManagerProps {
