@@ -76,6 +76,12 @@ const Checkout = () => {
   const [shippingFees, setShippingFees] = useState<ShippingFee[]>([]);
   const [selectedShippingFee, setSelectedShippingFee] = useState<number>(0);
   const [checkoutItems, setCheckoutItems] = useState<CheckoutCartItem[]>([]);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoDiscount, setPromoDiscount] = useState(0);
+  const [promoFreeShipping, setPromoFreeShipping] = useState(false);
+  const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoError, setPromoError] = useState("");
 
   // Redirect unauthenticated users
   useEffect(() => {
