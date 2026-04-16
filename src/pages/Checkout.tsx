@@ -155,12 +155,57 @@ const Checkout = () => {
   ];
 
   const subtotal = checkoutItems.reduce((acc, item) => acc + (item.product?.price || 0) * item.quantity, 0);
-  const shipping = selectedShippingFee;
-  const total = subtotal + shipping;
+  const discountAmount = promoDiscount > 0 ? Math.round(subtotal * promoDiscount / 100) : 0;
+  const effectiveShipping = promoFreeShipping && subtotal > 0 ? 0 : selectedShippingFee;
+  const total = subtotal - discountAmount + effectiveShipping;
   const totalSavings = checkoutItems.reduce(
     (acc, item) => acc + ((item.product?.original_price || item.product?.price || 0) - (item.product?.price || 0)) * item.quantity,
     0
-  );
+  ) + discountAmount;
+
+  const handleApplyPromo = async () => {
+    if (!promoCode.trim()) return;
+    setPromoLoading(true);
+    setPromoError("");
+
+    const { data, error } = await supabase
+      .from("promo_codes")
+      .select("code, discount_percent, free_shipping_threshold, scope, max_uses, used_count")
+      .eq("code", promoCode.trim().toUpperCase())
+      .eq("is_active", true)
+      .eq("status", "approved")
+      .lte("starts_at", new Date().toISOString())
+      .gt("expires_at", new Date().toISOString())
+      .maybeSingle();
+
+    setPromoLoading(false);
+
+    if (error || !data) {
+      setPromoError("Invalid or expired promo code");
+      setPromoDiscount(0);
+      setPromoFreeShipping(false);
+      setAppliedPromo(null);
+      return;
+    }
+
+    if (data.max_uses && data.used_count >= data.max_uses) {
+      setPromoError("This promo code has reached its usage limit");
+      return;
+    }
+
+    setPromoDiscount(data.discount_percent || 0);
+    setPromoFreeShipping(data.free_shipping_threshold != null && subtotal >= Number(data.free_shipping_threshold));
+    setAppliedPromo(data.code);
+    toast({ title: "Promo Applied! 🎉", description: `${data.discount_percent}% discount applied` });
+  };
+
+  const handleRemovePromo = () => {
+    setPromoCode("");
+    setPromoDiscount(0);
+    setPromoFreeShipping(false);
+    setAppliedPromo(null);
+    setPromoError("");
+  };
 
   const updateQuantity = (id: string, newQuantity: number) => {
     if (newQuantity < 1) return;
