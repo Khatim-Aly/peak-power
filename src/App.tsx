@@ -15,6 +15,8 @@ import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import ResetPassword from "./pages/ResetPassword";
 import WhatsAppButton from "./components/WhatsAppButton";
+import ExitIntentModal from "./components/ExitIntentModal";
+import SocialProofPopup from "./components/SocialProofPopup";
 
 // Dashboard sub-pages
 import {
@@ -59,6 +61,8 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           <WhatsAppButton />
+          <ExitIntentModal />
+          <SocialProofPopup />
         </BrowserRouter>
       </TooltipProvider>
       </CartProvider>
