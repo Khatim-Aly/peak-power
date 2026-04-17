@@ -50,6 +50,7 @@ const getNavItems = (role: AppRole | null): NavItem[] => {
       { label: 'Merchants', icon: Store, href: '/dashboard/merchants' },
       { label: 'All Orders', icon: Package, href: '/dashboard/orders' },
       { label: 'Analytics', icon: BarChart3, href: '/dashboard/analytics' },
+      { label: 'Requests', icon: Bell, href: '/dashboard/requests' },
       { label: 'Settings', icon: Settings, href: '/dashboard/settings' },
     ];
   }
@@ -69,6 +70,7 @@ const getNavItems = (role: AppRole | null): NavItem[] => {
     ...baseItems,
     { label: 'My Orders', icon: Package, href: '/dashboard/orders' },
     { label: 'Favorites', icon: Heart, href: '/dashboard/favorites' },
+    { label: 'Requests', icon: Bell, href: '/dashboard/requests' },
     { label: 'Shop', icon: ShoppingBag, href: '/product' },
     { label: 'Profile', icon: User, href: '/dashboard/profile' },
   ];

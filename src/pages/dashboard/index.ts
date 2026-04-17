@@ -6,3 +6,4 @@ export { default as DashboardSettings } from './DashboardSettings';
 export { default as DashboardFavorites } from './DashboardFavorites';
 export { default as DashboardProfile } from './DashboardProfile';
 export { default as DashboardProducts } from './DashboardProducts';
+export { default as DashboardRequests } from './DashboardRequests';

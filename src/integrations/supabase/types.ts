@@ -105,6 +105,99 @@ export type Database = {
           },
         ]
       }
+      merchant_applications: {
+        Row: {
+          admin_notes: string | null
+          business_description: string
+          business_proof_path: string | null
+          business_type: string
+          city: string
+          cnic_image_path: string | null
+          cnic_number: string
+          created_at: string
+          id: string
+          phone: string
+          pitch: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["application_status"]
+          store_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          business_description: string
+          business_proof_path?: string | null
+          business_type: string
+          city: string
+          cnic_image_path?: string | null
+          cnic_number: string
+          created_at?: string
+          id?: string
+          phone: string
+          pitch: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          store_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          business_description?: string
+          business_proof_path?: string | null
+          business_type?: string
+          city?: string
+          cnic_image_path?: string | null
+          cnic_number?: string
+          created_at?: string
+          id?: string
+          phone?: string
+          pitch?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          store_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      merchant_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          merchant_id: string
+          order_id: string
+          rating: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          merchant_id: string
+          order_id: string
+          rating: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          merchant_id?: string
+          order_id?: string
+          rating?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notification_preferences: {
         Row: {
           created_at: string
@@ -443,6 +536,48 @@ export type Database = {
         }
         Relationships: []
       }
+      support_tickets: {
+        Row: {
+          admin_response: string | null
+          category: string
+          created_at: string
+          id: string
+          message: string
+          responded_at: string | null
+          responded_by: string | null
+          status: Database["public"]["Enums"]["ticket_status"]
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_response?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          message: string
+          responded_at?: string | null
+          responded_by?: string | null
+          status?: Database["public"]["Enums"]["ticket_status"]
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_response?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          message?: string
+          responded_at?: string | null
+          responded_by?: string | null
+          status?: Database["public"]["Enums"]["ticket_status"]
+          subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -494,6 +629,7 @@ export type Database = {
     }
     Enums: {
       app_role: "user" | "merchant" | "admin"
+      application_status: "pending" | "approved" | "declined"
       order_status:
         | "placed"
         | "confirmed"
@@ -502,6 +638,7 @@ export type Database = {
         | "delivered"
         | "cancelled"
       promo_status: "pending" | "approved" | "rejected"
+      ticket_status: "open" | "in_progress" | "resolved" | "closed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -630,6 +767,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["user", "merchant", "admin"],
+      application_status: ["pending", "approved", "declined"],
       order_status: [
         "placed",
         "confirmed",
@@ -639,6 +777,7 @@ export const Constants = {
         "cancelled",
       ],
       promo_status: ["pending", "approved", "rejected"],
+      ticket_status: ["open", "in_progress", "resolved", "closed"],
     },
   },
 } as const
