@@ -9,7 +9,8 @@ import {
   XCircle,
   ArrowRight,
   TrendingUp,
-  Eye
+  Eye,
+  Store
 } from "lucide-react";
 import { DashboardLayout } from "./DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -132,6 +133,28 @@ export const UserDashboard = () => {
           </AnimatePresence>
         </Tabs>
       </div>
+
+      {/* Sell on PeakPower CTA */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-gradient-to-r from-gold/15 via-gold/5 to-transparent rounded-2xl p-6 border border-gold/20 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-xl bg-gold/20 flex items-center justify-center">
+            <Store className="w-6 h-6 text-gold" />
+          </div>
+          <div>
+            <h3 className="font-semibold">Sell on PeakPower GB</h3>
+            <p className="text-sm text-muted-foreground">Become a verified merchant and grow your business.</p>
+          </div>
+        </div>
+        <Link to="/dashboard/requests">
+          <Button variant="hero" size="sm">
+            View Requests <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
+        </Link>
+      </motion.div>
 
       {/* Quick Actions */}
       <div className="grid md:grid-cols-2 gap-4">

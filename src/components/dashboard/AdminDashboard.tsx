@@ -20,6 +20,7 @@ import { DashboardLayout } from "./DashboardLayout";
 import { ShippingFeesManager } from "./ShippingFeesManager";
 import { UserEditModal } from "./UserEditModal";
 import { PromoCodeManager } from "./PromoCodeManager";
+import { MerchantApplicationsManager } from "./MerchantApplicationsManager";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -277,6 +278,11 @@ export const AdminDashboard = () => {
             </>
           )}
         </Tabs>
+      </div>
+
+      {/* Merchant Applications */}
+      <div className="mt-8">
+        <MerchantApplicationsManager />
       </div>
 
       {/* Promo Codes Manager */}

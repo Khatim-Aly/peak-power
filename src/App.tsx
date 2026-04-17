@@ -28,7 +28,9 @@ import {
   DashboardFavorites,
   DashboardProfile,
   DashboardProducts,
+  DashboardRequests,
 } from "./pages/dashboard";
+import MerchantProfile from "./pages/MerchantProfile";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +59,8 @@ const App = () => (
             <Route path="/dashboard/favorites" element={<DashboardFavorites />} />
             <Route path="/dashboard/profile" element={<DashboardProfile />} />
             <Route path="/dashboard/products" element={<DashboardProducts />} />
+            <Route path="/dashboard/requests" element={<DashboardRequests />} />
+            <Route path="/merchant/:id" element={<MerchantProfile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
