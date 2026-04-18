@@ -79,7 +79,7 @@ const ProductFormModal = ({ open, onOpenChange, product, userId, onSaved }: Prod
 
     setIsSaving(true);
 
-    const payload = {
+    const basePayload = {
       name: name.trim(),
       description: description.trim() || null,
       price: parseFloat(price),
@@ -88,15 +88,15 @@ const ProductFormModal = ({ open, onOpenChange, product, userId, onSaved }: Prod
       category: category.trim() || null,
       image_url: imageUrl.trim() || null,
       is_active: isActive,
-      merchant_id: userId,
     };
 
     let error;
 
     if (product) {
-      ({ error } = await supabase.from("products").update(payload).eq("id", product.id));
+      // When editing, preserve the original merchant_id (admins editing other merchants' products shouldn't overwrite ownership)
+      ({ error } = await supabase.from("products").update(basePayload).eq("id", product.id));
     } else {
-      ({ error } = await supabase.from("products").insert(payload));
+      ({ error } = await supabase.from("products").insert({ ...basePayload, merchant_id: userId }));
     }
 
     setIsSaving(false);
