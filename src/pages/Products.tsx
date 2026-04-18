@@ -318,6 +318,19 @@ const Products = () => {
       <Footer />
 
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} onSuccess={executePendingAction} />
+
+      {isAdmin && user && (
+        <ProductFormModal
+          open={formOpen}
+          onOpenChange={(open) => {
+            setFormOpen(open);
+            if (!open) setEditingProduct(null);
+          }}
+          product={editingProduct as any}
+          userId={user.id}
+          onSaved={fetchProducts}
+        />
+      )}
     </div>
   );
 };
