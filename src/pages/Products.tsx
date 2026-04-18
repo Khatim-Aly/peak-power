@@ -228,6 +228,45 @@ const Products = () => {
                       </Badge>
                     )}
                   </div>
+
+                  {/* Admin controls */}
+                  {isAdmin && (
+                    <div className="absolute top-3 right-3 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className="h-8 w-8 shadow-lg"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleAdminEdit(product);
+                        }}
+                        title="Edit product (Admin)"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="destructive"
+                        className="h-8 w-8 shadow-lg"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleAdminDelete(product);
+                        }}
+                        title="Delete product (Admin)"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Admin badge */}
+                  {isAdmin && (
+                    <div className="absolute bottom-3 right-3 inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary/90 text-primary-foreground text-[10px] font-medium shadow-lg">
+                      <Shield className="w-3 h-3" /> Admin
+                    </div>
+                  )}
                 </div>
 
                 {/* Content */}
