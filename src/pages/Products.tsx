@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ShoppingCart, Store, Package, Search, Sparkles, TrendingUp, ArrowRight } from "lucide-react";
+import { ShoppingCart, Store, Package, Search, Sparkles, TrendingUp, ArrowRight, Edit, Trash2, Shield } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,8 @@ import { AuthModal } from "@/components/auth/AuthModal";
 import { useProtectedAction } from "@/hooks/useProtectedAction";
 import { useCartContext } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import ProductFormModal from "@/components/dashboard/ProductFormModal";
 
 interface ProductWithStore {
   id: string;
@@ -30,10 +32,14 @@ interface ProductWithStore {
 
 const Products = () => {
   const { toast } = useToast();
+  const { user, role } = useAuth();
+  const isAdmin = role === "admin";
   const [products, setProducts] = useState<ProductWithStore[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [editingProduct, setEditingProduct] = useState<ProductWithStore | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
   const { addToCart, setIsCartOpen } = useCartContext();
   const { showAuthModal, setShowAuthModal, executeProtectedAction, executePendingAction } = useProtectedAction();
 
@@ -89,6 +95,22 @@ const Products = () => {
         setIsCartOpen(true);
       }
     });
+  };
+
+  const handleAdminEdit = (product: ProductWithStore) => {
+    setEditingProduct(product);
+    setFormOpen(true);
+  };
+
+  const handleAdminDelete = async (product: ProductWithStore) => {
+    if (!confirm(`Delete "${product.name}"? This cannot be undone.`)) return;
+    const { error } = await supabase.from("products").delete().eq("id", product.id);
+    if (error) {
+      toast({ variant: "destructive", title: "Error", description: error.message });
+      return;
+    }
+    toast({ title: "Product Deleted", description: `${product.name} has been removed.` });
+    fetchProducts();
   };
 
   return (
@@ -206,6 +228,45 @@ const Products = () => {
                       </Badge>
                     )}
                   </div>
+
+                  {/* Admin controls */}
+                  {isAdmin && (
+                    <div className="absolute top-3 right-3 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className="h-8 w-8 shadow-lg"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleAdminEdit(product);
+                        }}
+                        title="Edit product (Admin)"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="destructive"
+                        className="h-8 w-8 shadow-lg"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleAdminDelete(product);
+                        }}
+                        title="Delete product (Admin)"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Admin badge */}
+                  {isAdmin && (
+                    <div className="absolute bottom-3 right-3 inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary/90 text-primary-foreground text-[10px] font-medium shadow-lg">
+                      <Shield className="w-3 h-3" /> Admin
+                    </div>
+                  )}
                 </div>
 
                 {/* Content */}
@@ -257,6 +318,19 @@ const Products = () => {
       <Footer />
 
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} onSuccess={executePendingAction} />
+
+      {isAdmin && user && (
+        <ProductFormModal
+          open={formOpen}
+          onOpenChange={(open) => {
+            setFormOpen(open);
+            if (!open) setEditingProduct(null);
+          }}
+          product={editingProduct as any}
+          userId={user.id}
+          onSaved={fetchProducts}
+        />
+      )}
     </div>
   );
 };
