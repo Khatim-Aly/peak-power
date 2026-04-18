@@ -101,7 +101,7 @@ const Testimonials = () => {
   };
 
   return (
-    <section className="py-24 bg-secondary relative overflow-hidden">
+    <section className="py-24 bg-secondary dark:bg-secondary relative overflow-hidden [&_.text-secondary-foreground]:text-black dark:[&_.text-secondary-foreground]:text-secondary-foreground [&_.text-secondary-foreground\/70]:text-black/70 dark:[&_.text-secondary-foreground\/70]:text-secondary-foreground/70 [&_.text-secondary-foreground\/60]:text-black/60 dark:[&_.text-secondary-foreground\/60]:text-secondary-foreground/60 [&_.text-secondary-foreground\/30]:text-black/30 dark:[&_.text-secondary-foreground\/30]:text-secondary-foreground/30">
       {/* Background Elements */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-radial-gold opacity-10 blur-3xl" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-radial-gold opacity-10 blur-3xl" />
