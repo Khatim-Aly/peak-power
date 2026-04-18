@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ShoppingCart, Store, Package, Search, Sparkles, TrendingUp, ArrowRight } from "lucide-react";
+import { ShoppingCart, Store, Package, Search, Sparkles, TrendingUp, ArrowRight, Edit, Trash2, Shield } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,8 @@ import { AuthModal } from "@/components/auth/AuthModal";
 import { useProtectedAction } from "@/hooks/useProtectedAction";
 import { useCartContext } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import ProductFormModal from "@/components/dashboard/ProductFormModal";
 
 interface ProductWithStore {
   id: string;
