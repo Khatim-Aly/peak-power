@@ -32,10 +32,14 @@ interface ProductWithStore {
 
 const Products = () => {
   const { toast } = useToast();
+  const { user, role } = useAuth();
+  const isAdmin = role === "admin";
   const [products, setProducts] = useState<ProductWithStore[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [editingProduct, setEditingProduct] = useState<ProductWithStore | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
   const { addToCart, setIsCartOpen } = useCartContext();
   const { showAuthModal, setShowAuthModal, executeProtectedAction, executePendingAction } = useProtectedAction();
 
