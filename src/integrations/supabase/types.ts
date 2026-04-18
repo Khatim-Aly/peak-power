@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_commissions: {
+        Row: {
+          base_amount: number
+          commission_amount: number
+          commission_percent: number
+          created_at: string
+          id: string
+          merchant_id: string | null
+          order_id: string
+          order_item_id: string | null
+          product_id: string | null
+          promotion_id: string | null
+          status: string
+        }
+        Insert: {
+          base_amount: number
+          commission_amount: number
+          commission_percent: number
+          created_at?: string
+          id?: string
+          merchant_id?: string | null
+          order_id: string
+          order_item_id?: string | null
+          product_id?: string | null
+          promotion_id?: string | null
+          status?: string
+        }
+        Update: {
+          base_amount?: number
+          commission_amount?: number
+          commission_percent?: number
+          created_at?: string
+          id?: string
+          merchant_id?: string | null
+          order_id?: string
+          order_item_id?: string | null
+          product_id?: string | null
+          promotion_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_commissions_promotion_id_fkey"
+            columns: ["promotion_id"]
+            isOneToOne: false
+            referencedRelation: "site_promotions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       auth_rate_limits: {
         Row: {
           attempt_type: string
@@ -532,6 +582,78 @@ export type Database = {
           created_at?: string
           fee?: number
           id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_promotions: {
+        Row: {
+          admin_notes: string | null
+          commission_percent: number
+          created_at: string
+          created_by: string
+          cta_label: string | null
+          cta_url: string | null
+          discount_percent: number | null
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          merchant_id: string | null
+          message: string
+          product_id: string | null
+          promo_code: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          scope: string
+          starts_at: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          commission_percent?: number
+          created_at?: string
+          created_by: string
+          cta_label?: string | null
+          cta_url?: string | null
+          discount_percent?: number | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          merchant_id?: string | null
+          message: string
+          product_id?: string | null
+          promo_code?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          scope?: string
+          starts_at?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          commission_percent?: number
+          created_at?: string
+          created_by?: string
+          cta_label?: string | null
+          cta_url?: string | null
+          discount_percent?: number | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          merchant_id?: string | null
+          message?: string
+          product_id?: string | null
+          promo_code?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          scope?: string
+          starts_at?: string
+          status?: string
+          title?: string
           updated_at?: string
         }
         Relationships: []
