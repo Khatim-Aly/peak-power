@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { DashboardLayout } from "./DashboardLayout";
 import { PromoCodeManager } from "./PromoCodeManager";
+import { MerchantPromotionsRequest } from "./MerchantPromotionsRequest";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -305,6 +306,11 @@ export const MerchantDashboard = () => {
       {/* Promo Codes */}
       <div className="mt-8">
         <PromoCodeManager isAdmin={false} merchantId={profile?.user_id} />
+      </div>
+
+      {/* Site Promotion Requests */}
+      <div className="mt-8">
+        <MerchantPromotionsRequest />
       </div>
     </DashboardLayout>
   );

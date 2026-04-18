@@ -17,6 +17,7 @@ import ResetPassword from "./pages/ResetPassword";
 import WhatsAppButton from "./components/WhatsAppButton";
 import ExitIntentModal from "./components/ExitIntentModal";
 import SocialProofPopup from "./components/SocialProofPopup";
+import PromoNotification from "./components/PromoNotification";
 
 // Dashboard sub-pages
 import {
@@ -67,6 +68,7 @@ const App = () => (
           <WhatsAppButton />
           <ExitIntentModal />
           <SocialProofPopup />
+          <PromoNotification />
         </BrowserRouter>
       </TooltipProvider>
       </CartProvider>
