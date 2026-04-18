@@ -97,6 +97,22 @@ const Products = () => {
     });
   };
 
+  const handleAdminEdit = (product: ProductWithStore) => {
+    setEditingProduct(product);
+    setFormOpen(true);
+  };
+
+  const handleAdminDelete = async (product: ProductWithStore) => {
+    if (!confirm(`Delete "${product.name}"? This cannot be undone.`)) return;
+    const { error } = await supabase.from("products").delete().eq("id", product.id);
+    if (error) {
+      toast({ variant: "destructive", title: "Error", description: error.message });
+      return;
+    }
+    toast({ title: "Product Deleted", description: `${product.name} has been removed.` });
+    fetchProducts();
+  };
+
   return (
     <div className="min-h-screen pt-20">
       <Navigation />
