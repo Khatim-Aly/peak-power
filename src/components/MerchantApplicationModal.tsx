@@ -48,7 +48,12 @@ export const MerchantApplicationModal = ({ isOpen, onClose, onSubmitted }: Props
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    e.stopPropagation();
+    if (!user) {
+      toast({ variant: "destructive", title: "Login required", description: "Please sign in first." });
+      return;
+    }
+    if (submitting) return; // guard double-submit
 
     // Validate
     if (!form.store_name || !form.business_type || !form.city || !form.phone || !form.pitch || !form.cnic_number || !form.business_description) {
@@ -65,6 +70,7 @@ export const MerchantApplicationModal = ({ isOpen, onClose, onSubmitted }: Props
       const [cnicPath, proofPath] = await Promise.all([uploadFile(cnicFile, "cnic"), uploadFile(proofFile, "proof")]);
 
       if (!cnicPath || !proofPath) {
+        // uploadFile already toasted the underlying error
         setSubmitting(false);
         return;
       }
@@ -83,7 +89,8 @@ export const MerchantApplicationModal = ({ isOpen, onClose, onSubmitted }: Props
       onSubmitted?.();
       onClose();
     } catch (err: any) {
-      toast({ variant: "destructive", title: "Submission failed", description: err.message });
+      console.error("[MerchantApplication] submit failed:", err);
+      toast({ variant: "destructive", title: "Submission failed", description: err?.message || "Unknown error. Please try again." });
     } finally {
       setSubmitting(false);
     }
