@@ -1,24 +1,33 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Sun, Moon, Check } from "lucide-react";
+import { Sun, Moon, Monitor, Check } from "lucide-react";
+
+type Mode = "light" | "dark" | "system";
+
+const applyMode = (mode: Mode) => {
+  const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  document.documentElement.classList.toggle("dark", mode === "dark" || (mode === "system" && systemDark));
+};
 
 const AppearanceSettings = () => {
-  const [isDark, setIsDark] = useState(false);
+  const [mode, setMode] = useState<Mode>("dark");
 
   useEffect(() => {
-    setIsDark(document.documentElement.classList.contains("dark"));
+    const saved = (localStorage.getItem("theme") as Mode | null) ?? "dark";
+    setMode(saved);
   }, []);
 
-  const setTheme = (dark: boolean) => {
-    setIsDark(dark);
-    if (dark) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
+  const setTheme = (m: Mode) => {
+    setMode(m);
+    localStorage.setItem("theme", m);
+    applyMode(m);
   };
+
+  const options: { value: Mode; label: string; icon: typeof Sun }[] = [
+    { value: "light", label: "Light", icon: Sun },
+    { value: "dark", label: "Dark", icon: Moon },
+    { value: "system", label: "System", icon: Monitor },
+  ];
 
   return (
     <motion.div
@@ -26,49 +35,34 @@ const AppearanceSettings = () => {
       animate={{ opacity: 1, y: 0 }}
       className="bg-card rounded-2xl border border-border p-6"
     >
-      <h3 className="text-lg font-serif font-bold mb-6">Appearance Settings</h3>
+      <h3 className="text-lg font-serif font-bold mb-2">Appearance</h3>
+      <p className="text-sm text-muted-foreground mb-6">
+        Choose how PeakPower looks. Pick "System" to follow your device theme automatically.
+      </p>
 
-      <div className="space-y-6">
-        <div>
-          <h4 className="font-medium mb-4">Theme</h4>
-          <div className="grid grid-cols-2 gap-4">
-            {/* Light Theme */}
+      <div className="grid grid-cols-3 gap-3">
+        {options.map(({ value, label, icon: Icon }) => {
+          const active = mode === value;
+          return (
             <button
-              onClick={() => setTheme(false)}
+              key={value}
+              onClick={() => setTheme(value)}
               className={`relative p-4 rounded-xl border-2 transition-all ${
-                !isDark ? "border-primary ring-2 ring-primary/20" : "border-border hover:border-primary/50"
+                active ? "border-primary ring-2 ring-primary/20" : "border-border hover:border-primary/50"
               }`}
             >
-              {!isDark && (
+              {active && (
                 <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
                   <Check className="w-3 h-3 text-primary-foreground" />
                 </div>
               )}
-              <div className="w-full h-20 bg-gradient-to-br from-white to-gray-100 rounded-lg mb-3 border border-gray-200 flex items-center justify-center">
-                <Sun className="w-6 h-6 text-amber-500" />
+              <div className="w-full h-16 sm:h-20 rounded-lg mb-3 border flex items-center justify-center bg-gradient-to-br from-muted to-muted/40">
+                <Icon className="w-6 h-6 text-gold" />
               </div>
-              <p className="text-sm font-medium">Light</p>
+              <p className="text-sm font-medium">{label}</p>
             </button>
-
-            {/* Dark Theme */}
-            <button
-              onClick={() => setTheme(true)}
-              className={`relative p-4 rounded-xl border-2 transition-all ${
-                isDark ? "border-primary ring-2 ring-primary/20" : "border-border hover:border-primary/50"
-              }`}
-            >
-              {isDark && (
-                <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                  <Check className="w-3 h-3 text-primary-foreground" />
-                </div>
-              )}
-              <div className="w-full h-20 bg-gradient-to-br from-gray-800 to-gray-950 rounded-lg mb-3 border border-gray-700 flex items-center justify-center">
-                <Moon className="w-6 h-6 text-blue-400" />
-              </div>
-              <p className="text-sm font-medium">Dark</p>
-            </button>
-          </div>
-        </div>
+          );
+        })}
       </div>
     </motion.div>
   );

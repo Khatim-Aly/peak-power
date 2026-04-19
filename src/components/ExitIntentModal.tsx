@@ -12,7 +12,7 @@ const SESSION_KEY = "ppgb_exit_intent_shown";
 interface ExitPromo {
   code: string;
   discount_percent: number;
-  exit_intent_timer_minutes: number;
+  expires_at: string; // ISO date string — drives countdown
 }
 
 const ExitIntentModal = () => {
@@ -27,33 +27,35 @@ const ExitIntentModal = () => {
 
   const { whatsappNumber, idleTimeoutMs } = conversionConfig.exitIntent;
 
-  // Fetch admin-configured exit-intent promo code
+  // Fetch admin-configured exit-intent promo code (uses real expires_at)
   useEffect(() => {
     if (promoFetched.current) return;
     promoFetched.current = true;
 
     supabase
       .from("promo_codes")
-      .select("code, discount_percent, exit_intent_timer_minutes")
+      .select("code, discount_percent, expires_at")
       .eq("show_on_exit_intent", true)
       .eq("is_active", true)
       .eq("status", "approved")
       .lte("starts_at", new Date().toISOString())
       .gt("expires_at", new Date().toISOString())
+      .order("expires_at", { ascending: true })
       .limit(1)
-      .single()
+      .maybeSingle()
       .then(({ data }) => {
         if (data) {
           setPromo(data as ExitPromo);
-          setTimeLeft((data as ExitPromo).exit_intent_timer_minutes * 60);
         } else {
-          // Fallback to config defaults
+          // Fallback: synthetic promo with an expiry N minutes in the future
+          const fallbackExpiry = new Date(
+            Date.now() + conversionConfig.exitIntent.countdownMinutes * 60_000,
+          ).toISOString();
           setPromo({
             code: "PEAK10",
             discount_percent: conversionConfig.exitIntent.discountPercent,
-            exit_intent_timer_minutes: conversionConfig.exitIntent.countdownMinutes,
+            expires_at: fallbackExpiry,
           });
-          setTimeLeft(conversionConfig.exitIntent.countdownMinutes * 60);
         }
       });
   }, []);
@@ -95,22 +97,27 @@ const ExitIntentModal = () => {
     };
   }, [showModal, idleTimeoutMs]);
 
-  // Countdown timer
+  // Real-time countdown driven by promo.expires_at — recomputed every tick so it stays accurate
   useEffect(() => {
-    if (!timerStarted.current || timeLeft <= 0) return;
+    if (!promo?.expires_at) return;
+    const compute = () => {
+      const diffSec = Math.max(0, Math.floor((new Date(promo.expires_at).getTime() - Date.now()) / 1000));
+      setTimeLeft(diffSec);
+      return diffSec;
+    };
+    compute();
     const interval = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) { clearInterval(interval); return 0; }
-        return prev - 1;
-      });
+      if (compute() <= 0) clearInterval(interval);
     }, 1000);
     return () => clearInterval(interval);
-  }, [isOpen, timeLeft]);
+  }, [promo]);
 
-  const formatTime = (s: number) => {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return `${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
+  const formatTime = (totalSec: number) => {
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    if (h > 0) return `${h}h ${m.toString().padStart(2, "0")}m ${s.toString().padStart(2, "0")}s`;
+    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
   const handleCopyCode = () => {

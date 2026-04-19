@@ -2,17 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)" />
+
     <!-- SECURITY HEADERS -->
-    <!-- Content Security Policy: Prevents XSS by restricting script/style sources -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.supabase.co https://*.lovableproject.com https://*.lovable.app; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.lovableproject.com https://*.lovable.app; frame-ancestors 'self' https://*.lovable.app; base-uri 'self'; form-action 'self';" />
-    <!-- Prevent clickjacking -->
     <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
-    <!-- Prevent MIME type sniffing -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <!-- Control referrer information sent with requests -->
     <meta name="referrer" content="strict-origin-when-cross-origin" />
+
     <title>PeakPower GB | Pure Himalayan Shilajit from Gilgit-Baltistan</title>
     <meta name="description" content="Experience the power of 100% authentic Himalayan Shilajit from Gilgit-Baltistan. Lab-tested, pure resin rich in 85+ minerals and fulvic acid. Boost energy, strength & vitality naturally." />
     <meta name="author" content="PeakPower GB" />
@@ -27,8 +26,30 @@
     <meta name="twitter:title" content="PeakPower GB | Pure Himalayan Shilajit" />
     <meta name="twitter:description" content="100% authentic Himalayan Shilajit from Gilgit-Baltistan. Boost energy, strength & vitality naturally." />
     <meta name="twitter:image" content="/og-image.jpg" />
-    
+
     <link rel="canonical" href="https://peakpowergb.com" />
+
+    <!-- Theme bootstrap: default dark, follow system unless user has explicit preference -->
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('theme'); // 'dark' | 'light' | 'system' | null
+          var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          // Default behavior:
+          // - No saved preference  -> follow system, but DEFAULT TO DARK
+          // - saved === 'system'   -> follow system
+          // - saved === 'dark'/'light' -> respect explicit choice
+          var useDark;
+          if (saved === 'dark') useDark = true;
+          else if (saved === 'light') useDark = false;
+          else if (saved === 'system') useDark = systemDark;
+          else useDark = true || systemDark; // default dark on first visit
+          document.documentElement.classList.toggle('dark', useDark);
+        } catch (e) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
 
   <body>
