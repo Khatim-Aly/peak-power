@@ -74,7 +74,9 @@ export const AuthModal = ({
                   className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-muted/80 backdrop-blur-sm flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <X className="w-5 h-5" />
-                </motion.button>
+                </button>
+
+                {/* Content - reduce padding on mobile */}
 
                 {/* Content */}
                 <div className="relative z-10 p-8 pt-16">
