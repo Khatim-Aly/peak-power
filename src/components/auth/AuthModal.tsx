@@ -51,32 +51,33 @@ export const AuthModal = ({
             className="fixed inset-0 bg-background/80 backdrop-blur-md z-[9998]"
           />
 
-          {/* Modal */}
+          {/* Modal - single scroll container to prevent mobile jank */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.96, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: "spring", duration: 0.5 }}
-            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 overflow-y-auto"
+            exit={{ opacity: 0, scale: 0.96, y: 10 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="fixed inset-0 z-[9999] flex items-start sm:items-center justify-center p-3 sm:p-4 overflow-y-auto overscroll-contain"
           >
-            <div className="relative w-full max-w-md my-auto">
-              {/* Glassmorphism Card */}
-              <div className="relative overflow-hidden rounded-3xl border border-border/50 bg-card/80 backdrop-blur-xl shadow-2xl max-h-[90vh] overflow-y-auto">
-                {/* Animated Background */}
-                <AnimatedBackground />
+            <div className="relative w-full max-w-md my-4 sm:my-auto">
+              {/* Glassmorphism Card - no nested scroll, no double overflow */}
+              <div className="relative rounded-3xl border border-border/50 bg-card/90 sm:backdrop-blur-xl shadow-2xl">
+                {/* Animated Background (lightweight on mobile) */}
+                <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+                  <AnimatedBackground />
+                </div>
 
                 {/* Close Button */}
-                <motion.button
-                  whileHover={{ scale: 1.1, rotate: 90 }}
-                  whileTap={{ scale: 0.9 }}
+                <button
                   onClick={onClose}
+                  aria-label="Close"
                   className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-muted/80 backdrop-blur-sm flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <X className="w-5 h-5" />
-                </motion.button>
+                </button>
 
                 {/* Content */}
-                <div className="relative z-10 p-8 pt-16">
+                <div className="relative z-10 p-5 pt-14 sm:p-8 sm:pt-16">
                   {/* Header */}
                   <motion.div
                     initial={{ opacity: 0, y: -20 }}
