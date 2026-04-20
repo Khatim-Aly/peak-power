@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Instagram, Facebook, Twitter } from "lucide-react";
+import { Mail, Phone, MapPin, Instagram, Facebook, Twitter, Smartphone, Download } from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -55,6 +55,18 @@ const Footer = () => {
               Pure Himalayan Shilajit sourced from Gilgit-Baltistan. 
               Natural energy at its peak for your vitality and wellness.
             </p>
+            <motion.a
+              href="/PeakPower.apk"
+              download="PeakPower.apk"
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              className="inline-flex items-center gap-3 px-5 py-3 rounded-xl bg-gradient-to-r from-gold-light via-gold to-gold-dark text-secondary font-semibold text-sm shadow-gold hover:shadow-[0_8px_30px_hsl(var(--gold)/0.5)] transition-shadow w-full sm:w-auto justify-center"
+              aria-label="Download PeakPower Android App"
+            >
+              <Smartphone className="w-5 h-5" />
+              <span>Download PeakPower App</span>
+              <Download className="w-4 h-4" />
+            </motion.a>
             <div className="flex gap-3">
               {socialLinks.map((social) => (
                 <motion.a
