@@ -19,7 +19,7 @@ import {
   Shield
 } from "lucide-react";
 import { useAuth, AppRole } from "@/contexts/AuthContext";
-import { useNotifications } from "@/hooks/useNotifications";
+
 import ThemeToggle from "@/components/ThemeToggle";
 import { NotificationBell } from "@/components/dashboard/NotificationBell";
 import { Button } from "@/components/ui/button";
@@ -95,7 +95,6 @@ const getRoleBadge = (role: AppRole | null) => {
 
 export const DashboardLayout = ({ children, title, subtitle }: DashboardLayoutProps) => {
   const { user, profile, role, signOut } = useAuth();
-  const { unreadCount } = useNotifications();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
