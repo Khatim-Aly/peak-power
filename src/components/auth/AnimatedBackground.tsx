@@ -1,6 +1,24 @@
 import { motion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const AnimatedBackground = () => {
+  const isMobile = useIsMobile();
+
+  // On mobile: render a static, lightweight gradient — no animations, no particles
+  if (isMobile) {
+    return (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+          className="absolute inset-0 opacity-30"
+          style={{
+            background:
+              "radial-gradient(circle at 20% 20%, hsl(var(--gold) / 0.4) 0%, transparent 50%), radial-gradient(circle at 80% 80%, hsl(var(--accent) / 0.3) 0%, transparent 50%)",
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {/* Gradient Orbs */}
@@ -22,7 +40,7 @@ export const AnimatedBackground = () => {
           ease: "easeInOut",
         }}
       />
-      
+
       <motion.div
         className="absolute w-[500px] h-[500px] rounded-full blur-[100px] opacity-30"
         style={{
@@ -61,25 +79,8 @@ export const AnimatedBackground = () => {
         }}
       />
 
-      {/* Shimmer Effect */}
-      <motion.div
-        className="absolute inset-0"
-        style={{
-          background: "linear-gradient(45deg, transparent 30%, hsl(var(--gold) / 0.05) 50%, transparent 70%)",
-          backgroundSize: "200% 200%",
-        }}
-        animate={{
-          backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"],
-        }}
-        transition={{
-          duration: 5,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-      />
-
-      {/* Floating Particles - More Dynamic */}
-      {[...Array(30)].map((_, i) => (
+      {/* Floating Particles */}
+      {[...Array(20)].map((_, i) => (
         <motion.div
           key={i}
           className="absolute rounded-full"
@@ -88,10 +89,11 @@ export const AnimatedBackground = () => {
             top: `${Math.random() * 100}%`,
             width: `${2 + Math.random() * 4}px`,
             height: `${2 + Math.random() * 4}px`,
-            background: i % 3 === 0 
-              ? "hsl(var(--gold) / 0.6)" 
-              : i % 3 === 1 
-                ? "hsl(var(--accent) / 0.5)" 
+            background:
+              i % 3 === 0
+                ? "hsl(var(--gold) / 0.6)"
+                : i % 3 === 1
+                ? "hsl(var(--accent) / 0.5)"
                 : "hsl(var(--primary) / 0.4)",
           }}
           animate={{
@@ -107,37 +109,6 @@ export const AnimatedBackground = () => {
             ease: "easeInOut",
           }}
         />
-      ))}
-
-      {/* Sparkle Effect */}
-      {[...Array(8)].map((_, i) => (
-        <motion.div
-          key={`sparkle-${i}`}
-          className="absolute"
-          style={{
-            left: `${10 + Math.random() * 80}%`,
-            top: `${10 + Math.random() * 80}%`,
-          }}
-          animate={{
-            opacity: [0, 1, 0],
-            scale: [0, 1, 0],
-            rotate: [0, 180, 360],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            delay: i * 0.5,
-            ease: "easeInOut",
-          }}
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z"
-              fill="hsl(var(--gold))"
-              fillOpacity="0.6"
-            />
-          </svg>
-        </motion.div>
       ))}
 
       {/* Pulsing Ring */}
