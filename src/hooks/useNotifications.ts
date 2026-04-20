@@ -39,6 +39,24 @@ export const useNotifications = () => {
     fetchNotifications();
   }, [fetchNotifications]);
 
+  // Realtime subscription — instantly receive new notifications
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel(`notifications:${user.id}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` },
+        () => {
+          fetchNotifications();
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, fetchNotifications]);
+
   const markAsRead = async (notificationId: string) => {
     const { error } = await supabase
       .from('notifications')
