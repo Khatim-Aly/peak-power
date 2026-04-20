@@ -76,10 +76,8 @@ export const AuthModal = ({
                   <X className="w-5 h-5" />
                 </button>
 
-                {/* Content - reduce padding on mobile */}
-
                 {/* Content */}
-                <div className="relative z-10 p-8 pt-16">
+                <div className="relative z-10 p-5 pt-14 sm:p-8 sm:pt-16">
                   {/* Header */}
                   <motion.div
                     initial={{ opacity: 0, y: -20 }}
