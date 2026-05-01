@@ -362,9 +362,11 @@ export type Database = {
       orders: {
         Row: {
           created_at: string
+          discount_amount: number
           id: string
           notes: string | null
           order_number: string
+          promo_code_used: string | null
           shipping_address: string | null
           shipping_city: string | null
           shipping_phone: string | null
@@ -376,9 +378,11 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          discount_amount?: number
           id?: string
           notes?: string | null
           order_number: string
+          promo_code_used?: string | null
           shipping_address?: string | null
           shipping_city?: string | null
           shipping_phone?: string | null
@@ -390,9 +394,11 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          discount_amount?: number
           id?: string
           notes?: string | null
           order_number?: string
+          promo_code_used?: string | null
           shipping_address?: string | null
           shipping_city?: string | null
           shipping_phone?: string | null
@@ -404,48 +410,111 @@ export type Database = {
         }
         Relationships: []
       }
+      product_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          photos: string[] | null
+          product_id: string
+          rating: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          photos?: string[] | null
+          product_id: string
+          rating: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          photos?: string[] | null
+          product_id?: string
+          rating?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category: string | null
           created_at: string
           description: string | null
+          description_long: string | null
+          gallery_urls: string[] | null
           id: string
           image_url: string | null
           is_active: boolean
+          is_customer_choice: boolean
+          is_daily_deal: boolean
+          is_new_arrival: boolean
+          is_top_selling: boolean
           merchant_id: string | null
           name: string
           original_price: number | null
           price: number
+          rating_avg: number
+          rating_count: number
+          sales_count: number
           stock: number
           updated_at: string
+          variants: Json | null
         }
         Insert: {
           category?: string | null
           created_at?: string
           description?: string | null
+          description_long?: string | null
+          gallery_urls?: string[] | null
           id?: string
           image_url?: string | null
           is_active?: boolean
+          is_customer_choice?: boolean
+          is_daily_deal?: boolean
+          is_new_arrival?: boolean
+          is_top_selling?: boolean
           merchant_id?: string | null
           name: string
           original_price?: number | null
           price: number
+          rating_avg?: number
+          rating_count?: number
+          sales_count?: number
           stock?: number
           updated_at?: string
+          variants?: Json | null
         }
         Update: {
           category?: string | null
           created_at?: string
           description?: string | null
+          description_long?: string | null
+          gallery_urls?: string[] | null
           id?: string
           image_url?: string | null
           is_active?: boolean
+          is_customer_choice?: boolean
+          is_daily_deal?: boolean
+          is_new_arrival?: boolean
+          is_top_selling?: boolean
           merchant_id?: string | null
           name?: string
           original_price?: number | null
           price?: number
+          rating_avg?: number
+          rating_count?: number
+          sales_count?: number
           stock?: number
           updated_at?: string
+          variants?: Json | null
         }
         Relationships: []
       }
@@ -726,6 +795,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_promo_codes_overview: { Args: never; Returns: Json }
       check_rate_limit: {
         Args: {
           _attempt_type: string
@@ -747,6 +817,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      validate_promo_code: {
+        Args: { _code: string; _product_ids: string[]; _subtotal: number }
+        Returns: Json
       }
     }
     Enums: {

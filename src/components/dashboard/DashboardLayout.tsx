@@ -16,7 +16,8 @@ import {
   Bell,
   ChevronRight,
   Store,
-  Shield
+  Shield,
+  Tag
 } from "lucide-react";
 import { useAuth, AppRole } from "@/contexts/AuthContext";
 
@@ -52,6 +53,7 @@ const getNavItems = (role: AppRole | null): NavItem[] => {
       { label: 'All Orders', icon: Package, href: '/dashboard/orders' },
       { label: 'Analytics', icon: BarChart3, href: '/dashboard/analytics' },
       { label: 'Requests', icon: Bell, href: '/dashboard/requests' },
+      { label: 'Promo Codes', icon: Tag, href: '/dashboard/promo-codes' },
       { label: 'Settings', icon: Settings, href: '/dashboard/settings' },
     ];
   }

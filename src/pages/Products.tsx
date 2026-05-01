@@ -200,8 +200,8 @@ const Products = () => {
                 transition={{ delay: Math.min(i * 0.04, 0.4) }}
                 className="group relative break-inside-avoid bg-card rounded-2xl border border-border overflow-hidden hover:border-gold/30 hover:shadow-2xl hover:shadow-gold/5 transition-all duration-300 mb-6"
               >
-                {/* Image */}
-                <div className="relative bg-muted overflow-hidden">
+                {/* Image — links to detail page */}
+                <Link to={`/product/${product.id}`} className="block relative bg-muted overflow-hidden">
                   {product.image_url ? (
                     <img
                       src={product.image_url}
@@ -267,7 +267,7 @@ const Products = () => {
                       <Shield className="w-3 h-3" /> Admin
                     </div>
                   )}
-                </div>
+                </Link>
 
                 {/* Content */}
                 <div className="p-4">
@@ -283,7 +283,9 @@ const Products = () => {
                     </Link>
                   )}
 
-                  <h3 className="font-semibold text-base mb-1 line-clamp-1">{product.name}</h3>
+                  <Link to={`/product/${product.id}`}>
+                    <h3 className="font-semibold text-base mb-1 line-clamp-1 hover:text-gold transition-colors">{product.name}</h3>
+                  </Link>
                   {product.description && (
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{product.description}</p>
                   )}
