@@ -168,35 +168,33 @@ const Checkout = () => {
     setPromoLoading(true);
     setPromoError("");
 
-    const { data, error } = await supabase
-      .from("promo_codes")
-      .select("code, discount_percent, free_shipping_threshold, scope, max_uses, used_count")
-      .eq("code", promoCode.trim().toUpperCase())
-      .eq("is_active", true)
-      .eq("status", "approved")
-      .lte("starts_at", new Date().toISOString())
-      .gt("expires_at", new Date().toISOString())
-      .maybeSingle();
+    const productIds = checkoutItems.map((i) => i.product_id);
+    const { data, error } = await supabase.rpc("validate_promo_code", {
+      _code: promoCode.trim().toUpperCase(),
+      _product_ids: productIds,
+      _subtotal: subtotal,
+    });
 
     setPromoLoading(false);
 
-    if (error || !data) {
-      setPromoError("Invalid or expired promo code");
+    const result = data as any;
+    if (error || !result?.valid) {
+      setPromoError(result?.error || "Invalid or expired promo code");
       setPromoDiscount(0);
       setPromoFreeShipping(false);
       setAppliedPromo(null);
       return;
     }
 
-    if (data.max_uses && data.used_count >= data.max_uses) {
-      setPromoError("This promo code has reached its usage limit");
-      return;
-    }
-
-    setPromoDiscount(data.discount_percent || 0);
-    setPromoFreeShipping(data.free_shipping_threshold != null && subtotal >= Number(data.free_shipping_threshold));
-    setAppliedPromo(data.code);
-    toast({ title: "Promo Applied! 🎉", description: `${data.discount_percent}% discount applied` });
+    setPromoDiscount(result.discount_percent || 0);
+    setPromoFreeShipping(
+      result.free_shipping_threshold != null && subtotal >= Number(result.free_shipping_threshold)
+    );
+    setAppliedPromo(result.code);
+    toast({
+      title: "Promo Applied! 🎉",
+      description: `${result.discount_percent}% off on eligible items`,
+    });
   };
 
   const handleRemovePromo = () => {
@@ -272,6 +270,8 @@ const Checkout = () => {
       shipping_postal_code: shippingInfo.zipCode,
       shipping_phone: shippingInfo.phone,
       notes: shippingInfo.state ? `State: ${shippingInfo.state}` : undefined,
+      promo_code_used: appliedPromo,
+      discount_amount: discountAmount,
       items: orderItems,
     });
 

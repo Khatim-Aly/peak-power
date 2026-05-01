@@ -76,6 +76,8 @@ export const useOrders = () => {
     shipping_postal_code: string;
     shipping_phone: string;
     notes?: string;
+    promo_code_used?: string | null;
+    discount_amount?: number;
     items: { product_name: string; product_image?: string; quantity: number; price: number; product_id?: string }[];
   }) => {
     if (!user) return { error: new Error('Not authenticated') };
@@ -91,6 +93,8 @@ export const useOrders = () => {
         shipping_postal_code: orderData.shipping_postal_code,
         shipping_phone: orderData.shipping_phone,
         notes: orderData.notes,
+        promo_code_used: orderData.promo_code_used || null,
+        discount_amount: orderData.discount_amount || 0,
         order_number: 'TEMP', // Will be overwritten by trigger
       }])
       .select()
