@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import Index from "./pages/Index";
 import Product from "./pages/Product";
+import ProductDetail from "./pages/ProductDetail";
 import Products from "./pages/Products";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -31,6 +32,7 @@ import {
   DashboardProducts,
   DashboardRequests,
 } from "./pages/dashboard";
+import DashboardPromoCodes from "./pages/dashboard/DashboardPromoCodes";
 import MerchantProfile from "./pages/MerchantProfile";
 
 const queryClient = new QueryClient();
@@ -46,6 +48,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/product" element={<Product />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/products" element={<Products />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
@@ -61,6 +64,7 @@ const App = () => (
             <Route path="/dashboard/profile" element={<DashboardProfile />} />
             <Route path="/dashboard/products" element={<DashboardProducts />} />
             <Route path="/dashboard/requests" element={<DashboardRequests />} />
+            <Route path="/dashboard/promo-codes" element={<DashboardPromoCodes />} />
             <Route path="/merchant/:id" element={<MerchantProfile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

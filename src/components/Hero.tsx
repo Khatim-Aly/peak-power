@@ -84,7 +84,10 @@ const Hero = () => {
                 </Link>
               </Button>
               <Button variant="premium" size="xl" asChild>
-                <Link to="/about">Learn More</Link>
+                <Link to="/products" className="group">
+                  Explore More Products
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Link>
               </Button>
             </motion.div>
 

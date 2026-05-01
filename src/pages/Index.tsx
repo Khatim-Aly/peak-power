@@ -7,6 +7,7 @@ import Testimonials from "@/components/Testimonials";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
 import AnimatedBackground from "@/components/AnimatedBackground";
+import HomeRails from "@/components/home/HomeRails";
 
 const Index = () => {
   return (
@@ -17,6 +18,7 @@ const Index = () => {
       <Hero />
 
       <div className="relative z-10 [&>section]:bg-background/80 [&>section]:backdrop-blur-sm">
+        <HomeRails />
         <Benefits />
         <ProductCard />
         <TrustBadges />
