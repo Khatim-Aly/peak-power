@@ -20,6 +20,7 @@ import { DashboardLayout } from "./DashboardLayout";
 import { ShippingFeesManager } from "./ShippingFeesManager";
 import { UserEditModal } from "./UserEditModal";
 import { PromoCodeManager } from "./PromoCodeManager";
+import AdminPromoCodesOverview from "./AdminPromoCodesOverview";
 import { MerchantApplicationsManager } from "./MerchantApplicationsManager";
 import { SitePromotionsManager } from "./SitePromotionsManager";
 import { AdminWallet } from "./AdminWallet";
@@ -297,7 +298,12 @@ export const AdminDashboard = () => {
         <AdminWallet />
       </div>
 
-      {/* Promo Codes Manager */}
+      {/* Manage Promo Codes — pending + active grouped by store */}
+      <div className="mt-8">
+        <AdminPromoCodesOverview />
+      </div>
+
+      {/* Promo Codes Manager (full table) */}
       <div className="mt-8">
         <PromoCodeManager isAdmin={true} />
       </div>
