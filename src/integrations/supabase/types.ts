@@ -455,11 +455,13 @@ export type Database = {
           is_active: boolean
           is_customer_choice: boolean
           is_daily_deal: boolean
+          is_featured_on_store: boolean
           is_new_arrival: boolean
           is_top_selling: boolean
           merchant_id: string | null
           name: string
           original_price: number | null
+          pinned_order: number | null
           price: number
           rating_avg: number
           rating_count: number
@@ -479,11 +481,13 @@ export type Database = {
           is_active?: boolean
           is_customer_choice?: boolean
           is_daily_deal?: boolean
+          is_featured_on_store?: boolean
           is_new_arrival?: boolean
           is_top_selling?: boolean
           merchant_id?: string | null
           name: string
           original_price?: number | null
+          pinned_order?: number | null
           price: number
           rating_avg?: number
           rating_count?: number
@@ -503,11 +507,13 @@ export type Database = {
           is_active?: boolean
           is_customer_choice?: boolean
           is_daily_deal?: boolean
+          is_featured_on_store?: boolean
           is_new_arrival?: boolean
           is_top_selling?: boolean
           merchant_id?: string | null
           name?: string
           original_price?: number | null
+          pinned_order?: number | null
           price?: number
           rating_avg?: number
           rating_count?: number
@@ -522,6 +528,8 @@ export type Database = {
         Row: {
           address: string | null
           avatar_url: string | null
+          banner_url: string | null
+          bio: string | null
           city: string | null
           created_at: string
           email: string | null
@@ -529,13 +537,22 @@ export type Database = {
           id: string
           phone: string | null
           postal_code: string | null
+          return_policy: string | null
+          shipping_policy: string | null
+          social_facebook: string | null
+          social_instagram: string | null
+          social_tiktok: string | null
+          social_whatsapp: string | null
           store_name: string | null
+          theme_color: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           address?: string | null
           avatar_url?: string | null
+          banner_url?: string | null
+          bio?: string | null
           city?: string | null
           created_at?: string
           email?: string | null
@@ -543,13 +560,22 @@ export type Database = {
           id?: string
           phone?: string | null
           postal_code?: string | null
+          return_policy?: string | null
+          shipping_policy?: string | null
+          social_facebook?: string | null
+          social_instagram?: string | null
+          social_tiktok?: string | null
+          social_whatsapp?: string | null
           store_name?: string | null
+          theme_color?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           address?: string | null
           avatar_url?: string | null
+          banner_url?: string | null
+          bio?: string | null
           city?: string | null
           created_at?: string
           email?: string | null
@@ -557,7 +583,14 @@ export type Database = {
           id?: string
           phone?: string | null
           postal_code?: string | null
+          return_policy?: string | null
+          shipping_policy?: string | null
+          social_facebook?: string | null
+          social_instagram?: string | null
+          social_tiktok?: string | null
+          social_whatsapp?: string | null
           store_name?: string | null
+          theme_color?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -727,6 +760,27 @@ export type Database = {
         }
         Relationships: []
       }
+      store_follows: {
+        Row: {
+          created_at: string
+          id: string
+          merchant_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          merchant_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          merchant_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       support_tickets: {
         Row: {
           admin_response: string | null
@@ -807,6 +861,7 @@ export type Database = {
       }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
       get_merchant_orders: { Args: never; Returns: Json[] }
+      get_store_stats: { Args: { _merchant_id: string }; Returns: Json }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
