@@ -234,10 +234,11 @@ const ProductDetail = () => {
             {product.merchant_id && product.store_name && (
               <Link
                 to={`/merchant/${product.merchant_id}`}
-                className="inline-flex items-center gap-2 mb-3 text-sm text-gold hover:underline"
+                className="inline-flex items-center gap-2 mb-3 px-3 py-1.5 rounded-full bg-gold/10 border border-gold/30 text-sm text-gold hover:bg-gold/20 transition"
               >
                 <Store className="w-4 h-4" />
                 <span className="font-medium">{product.store_name}</span>
+                <span className="opacity-70">· Visit Store →</span>
               </Link>
             )}
 
