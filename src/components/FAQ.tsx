@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Accordion,
@@ -5,8 +6,22 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { supabase } from "@/integrations/supabase/client";
 
 const FAQ = () => {
+  const [dbFaqs, setDbFaqs] = useState<{ question: string; answer: string }[] | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("cms_faqs")
+        .select("question, answer")
+        .eq("is_published", true)
+        .order("sort_order");
+      if (data && data.length) setDbFaqs(data);
+    })();
+  }, []);
+
   const faqs = [
     {
       question: "What is Shilajit and where does it come from?",
@@ -60,6 +75,8 @@ const FAQ = () => {
     },
   ];
 
+  const list = dbFaqs && dbFaqs.length > 0 ? dbFaqs : faqs;
+
   return (
     <section className="py-24 relative" id="faq">
       <div className="container mx-auto px-4 lg:px-8">
@@ -90,7 +107,7 @@ const FAQ = () => {
           className="max-w-3xl mx-auto"
         >
           <Accordion type="single" collapsible className="space-y-4">
-            {faqs.map((faq, index) => (
+            {list.map((faq, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 10 }}
