@@ -32,7 +32,7 @@ export const ReturnsManager = () => {
       .order("created_at", { ascending: false });
     const list = (data as any) || [];
     if (list.length) {
-      const userIds = [...new Set(list.map((r: any) => r.user_id))];
+      const userIds = Array.from(new Set(list.map((r: any) => r.user_id))) as string[];
       const { data: profs } = await supabase.from("profiles").select("user_id, full_name, email").in("user_id", userIds);
       const map = new Map((profs || []).map((p: any) => [p.user_id, p]));
       list.forEach((r: any) => { r.profiles = map.get(r.user_id) || null; });
