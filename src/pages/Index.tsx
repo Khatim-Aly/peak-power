@@ -8,6 +8,7 @@ import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import HomeRails from "@/components/home/HomeRails";
+import CmsBannerStrip from "@/components/home/CmsBannerStrip";
 
 const Index = () => {
   return (
@@ -19,6 +20,7 @@ const Index = () => {
 
       <div className="relative z-10 [&>section]:bg-background/80 [&>section]:backdrop-blur-sm">
         <HomeRails />
+        <CmsBannerStrip position="strip" />
         <Benefits />
         <ProductCard />
         <TrustBadges />

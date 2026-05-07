@@ -33,6 +33,9 @@ import {
   DashboardRequests,
 } from "./pages/dashboard";
 import DashboardPromoCodes from "./pages/dashboard/DashboardPromoCodes";
+import DashboardCms from "./pages/dashboard/DashboardCms";
+import DashboardLogistics from "./pages/dashboard/DashboardLogistics";
+import CmsPage from "./pages/CmsPage";
 import MerchantProfile from "./pages/MerchantProfile";
 
 const queryClient = new QueryClient();
@@ -65,7 +68,10 @@ const App = () => (
             <Route path="/dashboard/products" element={<DashboardProducts />} />
             <Route path="/dashboard/requests" element={<DashboardRequests />} />
             <Route path="/dashboard/promo-codes" element={<DashboardPromoCodes />} />
+            <Route path="/dashboard/cms" element={<DashboardCms />} />
+            <Route path="/dashboard/logistics" element={<DashboardLogistics />} />
             <Route path="/merchant/:id" element={<MerchantProfile />} />
+            <Route path="/page/:slug" element={<CmsPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

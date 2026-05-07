@@ -17,7 +17,9 @@ import {
   ChevronRight,
   Store,
   Shield,
-  Tag
+  Tag,
+  FileText,
+  Truck
 } from "lucide-react";
 import { useAuth, AppRole } from "@/contexts/AuthContext";
 
@@ -54,6 +56,8 @@ const getNavItems = (role: AppRole | null): NavItem[] => {
       { label: 'Analytics', icon: BarChart3, href: '/dashboard/analytics' },
       { label: 'Requests', icon: Bell, href: '/dashboard/requests' },
       { label: 'Promo Codes', icon: Tag, href: '/dashboard/promo-codes' },
+      { label: 'Content (CMS)', icon: FileText, href: '/dashboard/cms' },
+      { label: 'Logistics', icon: Truck, href: '/dashboard/logistics' },
       { label: 'Settings', icon: Settings, href: '/dashboard/settings' },
     ];
   }
