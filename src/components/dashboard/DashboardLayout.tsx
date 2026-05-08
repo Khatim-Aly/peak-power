@@ -19,7 +19,9 @@ import {
   Shield,
   Tag,
   FileText,
-  Truck
+  Truck,
+  Banknote,
+  Megaphone
 } from "lucide-react";
 import { useAuth, AppRole } from "@/contexts/AuthContext";
 
@@ -58,6 +60,8 @@ const getNavItems = (role: AppRole | null): NavItem[] => {
       { label: 'Promo Codes', icon: Tag, href: '/dashboard/promo-codes' },
       { label: 'Content (CMS)', icon: FileText, href: '/dashboard/cms' },
       { label: 'Logistics', icon: Truck, href: '/dashboard/logistics' },
+      { label: 'Finance', icon: Banknote, href: '/dashboard/finance' },
+      { label: 'Growth', icon: Megaphone, href: '/dashboard/growth' },
       { label: 'Settings', icon: Settings, href: '/dashboard/settings' },
     ];
   }
@@ -67,6 +71,8 @@ const getNavItems = (role: AppRole | null): NavItem[] => {
       ...baseItems,
       { label: 'Orders', icon: Package, href: '/dashboard/orders' },
       { label: 'Products', icon: ShoppingBag, href: '/dashboard/products' },
+      { label: 'Earnings', icon: Banknote, href: '/dashboard/finance' },
+      { label: 'Growth', icon: Megaphone, href: '/dashboard/growth' },
       { label: 'Analytics', icon: BarChart3, href: '/dashboard/analytics' },
       { label: 'Settings', icon: Settings, href: '/dashboard/settings' },
     ];

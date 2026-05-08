@@ -88,6 +88,95 @@ export type Database = {
         }
         Relationships: []
       }
+      broadcast_recipients: {
+        Row: {
+          broadcast_id: string
+          created_at: string
+          delivered_at: string | null
+          error_message: string | null
+          id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          broadcast_id: string
+          created_at?: string
+          delivered_at?: string | null
+          error_message?: string | null
+          id?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          broadcast_id?: string
+          created_at?: string
+          delivered_at?: string | null
+          error_message?: string | null
+          id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "broadcast_recipients_broadcast_id_fkey"
+            columns: ["broadcast_id"]
+            isOneToOne: false
+            referencedRelation: "broadcasts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      broadcasts: {
+        Row: {
+          audience: Database["public"]["Enums"]["broadcast_audience"]
+          body: string
+          channel: Database["public"]["Enums"]["broadcast_channel"]
+          created_at: string
+          created_by: string
+          delivered_count: number
+          failed_count: number
+          id: string
+          recipient_count: number
+          scheduled_at: string | null
+          sent_at: string | null
+          status: Database["public"]["Enums"]["broadcast_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audience?: Database["public"]["Enums"]["broadcast_audience"]
+          body: string
+          channel?: Database["public"]["Enums"]["broadcast_channel"]
+          created_at?: string
+          created_by: string
+          delivered_count?: number
+          failed_count?: number
+          id?: string
+          recipient_count?: number
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["broadcast_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          audience?: Database["public"]["Enums"]["broadcast_audience"]
+          body?: string
+          channel?: Database["public"]["Enums"]["broadcast_channel"]
+          created_at?: string
+          created_by?: string
+          delivered_count?: number
+          failed_count?: number
+          id?: string
+          recipient_count?: number
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["broadcast_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cart_items: {
         Row: {
           created_at: string
@@ -283,6 +372,36 @@ export type Database = {
           meta_description?: string | null
           slug?: string
           title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      commission_settings: {
+        Row: {
+          commission_percent: number
+          created_at: string
+          id: string
+          is_default: boolean
+          merchant_id: string | null
+          notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          commission_percent?: number
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          merchant_id?: string | null
+          notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          commission_percent?: number
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          merchant_id?: string | null
+          notes?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -643,6 +762,57 @@ export type Database = {
         }
         Relationships: []
       }
+      payouts: {
+        Row: {
+          commission_amount: number
+          created_at: string
+          gross_sales: number
+          id: string
+          merchant_id: string
+          net_amount: number
+          notes: string | null
+          paid_at: string | null
+          payment_method: string | null
+          payment_reference: string | null
+          period_end: string
+          period_start: string
+          status: Database["public"]["Enums"]["payout_status"]
+          updated_at: string
+        }
+        Insert: {
+          commission_amount?: number
+          created_at?: string
+          gross_sales?: number
+          id?: string
+          merchant_id: string
+          net_amount?: number
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          period_end: string
+          period_start: string
+          status?: Database["public"]["Enums"]["payout_status"]
+          updated_at?: string
+        }
+        Update: {
+          commission_amount?: number
+          created_at?: string
+          gross_sales?: number
+          id?: string
+          merchant_id?: string
+          net_amount?: number
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          period_end?: string
+          period_start?: string
+          status?: Database["public"]["Enums"]["payout_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       product_reviews: {
         Row: {
           comment: string | null
@@ -896,6 +1066,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          reward_amount: number
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          reward_amount?: number
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          reward_amount?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          code_used: string
+          created_at: string
+          id: string
+          qualified_at: string | null
+          referred_user_id: string
+          referrer_id: string
+          reward_amount: number
+          rewarded_at: string | null
+          status: Database["public"]["Enums"]["referral_status"]
+        }
+        Insert: {
+          code_used: string
+          created_at?: string
+          id?: string
+          qualified_at?: string | null
+          referred_user_id: string
+          referrer_id: string
+          reward_amount?: number
+          rewarded_at?: string | null
+          status?: Database["public"]["Enums"]["referral_status"]
+        }
+        Update: {
+          code_used?: string
+          created_at?: string
+          id?: string
+          qualified_at?: string | null
+          referred_user_id?: string
+          referrer_id?: string
+          reward_amount?: number
+          rewarded_at?: string | null
+          status?: Database["public"]["Enums"]["referral_status"]
+        }
+        Relationships: []
       }
       returns: {
         Row: {
@@ -1182,6 +1415,10 @@ export type Database = {
         Returns: boolean
       }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
+      compute_merchant_earnings: {
+        Args: { _from: string; _merchant_id: string; _to: string }
+        Returns: Json
+      }
       get_merchant_orders: { Args: never; Returns: Json[] }
       get_store_stats: { Args: { _merchant_id: string }; Returns: Json }
       get_user_role: {
@@ -1195,6 +1432,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      send_broadcast: { Args: { _broadcast_id: string }; Returns: Json }
       validate_promo_code: {
         Args: { _code: string; _product_ids: string[]; _subtotal: number }
         Returns: Json
@@ -1203,6 +1441,14 @@ export type Database = {
     Enums: {
       app_role: "user" | "merchant" | "admin"
       application_status: "pending" | "approved" | "declined"
+      broadcast_audience:
+        | "all_users"
+        | "all_merchants"
+        | "all_customers"
+        | "followers"
+        | "custom"
+      broadcast_channel: "email" | "sms" | "in_app"
+      broadcast_status: "draft" | "scheduled" | "sending" | "sent" | "failed"
       order_status:
         | "placed"
         | "confirmed"
@@ -1210,7 +1456,9 @@ export type Database = {
         | "shipped"
         | "delivered"
         | "cancelled"
+      payout_status: "pending" | "processing" | "paid" | "failed" | "cancelled"
       promo_status: "pending" | "approved" | "rejected"
+      referral_status: "pending" | "qualified" | "rewarded" | "cancelled"
       return_status:
         | "requested"
         | "approved"
@@ -1356,6 +1604,15 @@ export const Constants = {
     Enums: {
       app_role: ["user", "merchant", "admin"],
       application_status: ["pending", "approved", "declined"],
+      broadcast_audience: [
+        "all_users",
+        "all_merchants",
+        "all_customers",
+        "followers",
+        "custom",
+      ],
+      broadcast_channel: ["email", "sms", "in_app"],
+      broadcast_status: ["draft", "scheduled", "sending", "sent", "failed"],
       order_status: [
         "placed",
         "confirmed",
@@ -1364,7 +1621,9 @@ export const Constants = {
         "delivered",
         "cancelled",
       ],
+      payout_status: ["pending", "processing", "paid", "failed", "cancelled"],
       promo_status: ["pending", "approved", "rejected"],
+      referral_status: ["pending", "qualified", "rewarded", "cancelled"],
       return_status: [
         "requested",
         "approved",
