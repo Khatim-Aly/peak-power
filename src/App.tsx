@@ -35,6 +35,8 @@ import {
 import DashboardPromoCodes from "./pages/dashboard/DashboardPromoCodes";
 import DashboardCms from "./pages/dashboard/DashboardCms";
 import DashboardLogistics from "./pages/dashboard/DashboardLogistics";
+import DashboardFinance from "./pages/dashboard/DashboardFinance";
+import DashboardGrowth from "./pages/dashboard/DashboardGrowth";
 import CmsPage from "./pages/CmsPage";
 import MerchantProfile from "./pages/MerchantProfile";
 
@@ -70,6 +72,8 @@ const App = () => (
             <Route path="/dashboard/promo-codes" element={<DashboardPromoCodes />} />
             <Route path="/dashboard/cms" element={<DashboardCms />} />
             <Route path="/dashboard/logistics" element={<DashboardLogistics />} />
+            <Route path="/dashboard/finance" element={<DashboardFinance />} />
+            <Route path="/dashboard/growth" element={<DashboardGrowth />} />
             <Route path="/merchant/:id" element={<MerchantProfile />} />
             <Route path="/page/:slug" element={<CmsPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
