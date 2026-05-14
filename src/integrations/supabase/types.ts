@@ -64,6 +64,33 @@ export type Database = {
           },
         ]
       }
+      ai_cache: {
+        Row: {
+          cache_key: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          kind: string
+          payload: Json
+        }
+        Insert: {
+          cache_key: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          kind: string
+          payload: Json
+        }
+        Update: {
+          cache_key?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          kind?: string
+          payload?: Json
+        }
+        Relationships: []
+      }
       auth_rate_limits: {
         Row: {
           attempt_type: string
@@ -211,6 +238,65 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chatbot_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          session_key: string | null
+          title: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          session_key?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          session_key?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      chatbot_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          role: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          role: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chatbot_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chatbot_conversations"
             referencedColumns: ["id"]
           },
         ]

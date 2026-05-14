@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 
 interface Product {
   id: string;
@@ -37,6 +37,8 @@ interface ProductFormModalProps {
 const ProductFormModal = ({ open, onOpenChange, product, userId, onSaved }: ProductFormModalProps) => {
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [aiKeywords, setAiKeywords] = useState("");
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -111,6 +113,30 @@ const ProductFormModal = ({ open, onOpenChange, product, userId, onSaved }: Prod
     onSaved();
   };
 
+  const handleAiGenerate = async () => {
+    if (!aiKeywords.trim()) {
+      toast({ variant: "destructive", title: "Add keywords", description: "Enter a few keywords for the AI to work with." });
+      return;
+    }
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-generate-product", {
+        body: { keywords: aiKeywords.trim(), category: category.trim() || null, currentName: name.trim() || null },
+      });
+      if (error) throw error;
+      if (data?.name) setName(data.name);
+      if (data?.description) {
+        const desc = data.description + (data.bullets?.length ? "\n\nKey features:\n• " + data.bullets.join("\n• ") : "");
+        setDescription(desc);
+      }
+      toast({ title: "AI generated ✨", description: "Review the suggestions and tweak as needed." });
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "AI error", description: e.message || "Try again" });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
@@ -118,6 +144,26 @@ const ProductFormModal = ({ open, onOpenChange, product, userId, onSaved }: Prod
           <DialogTitle className="font-serif">{product ? "Edit Product" : "Add Product"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+          {/* AI Generator */}
+          <div className="rounded-xl border border-gold/30 bg-gradient-to-br from-gold/5 to-amber-500/5 p-3 space-y-2">
+            <Label htmlFor="aiKeywords" className="flex items-center gap-1.5 text-xs font-semibold text-gold">
+              <Sparkles className="w-3.5 h-3.5" /> AI Title & Description Generator
+            </Label>
+            <div className="flex gap-2">
+              <Input
+                id="aiKeywords"
+                value={aiKeywords}
+                onChange={e => setAiKeywords(e.target.value)}
+                placeholder="e.g. premium himalayan shilajit 20g resin"
+                className="bg-background/50"
+                disabled={isGenerating}
+              />
+              <Button type="button" variant="outline" onClick={handleAiGenerate} disabled={isGenerating} className="border-gold/40 hover:bg-gold/10 shrink-0">
+                {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+              </Button>
+            </div>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="name">Name *</Label>
             <Input id="name" value={name} onChange={e => setName(e.target.value)} placeholder="Product name" required />
