@@ -16,6 +16,7 @@ import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import ResetPassword from "./pages/ResetPassword";
 import WhatsAppButton from "./components/WhatsAppButton";
+import AiChatbot from "./components/ai/AiChatbot";
 import ExitIntentModal from "./components/ExitIntentModal";
 import SocialProofPopup from "./components/SocialProofPopup";
 import PromoNotification from "./components/PromoNotification";
@@ -80,6 +81,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           <WhatsAppButton />
+          <AiChatbot />
           <ExitIntentModal />
           <SocialProofPopup />
           <PromoNotification />

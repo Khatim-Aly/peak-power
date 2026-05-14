@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import HomeRails from "@/components/home/HomeRails";
 import CmsBannerStrip from "@/components/home/CmsBannerStrip";
+import AiRecommendations from "@/components/ai/AiRecommendations";
 
 const Index = () => {
   return (
@@ -20,6 +21,7 @@ const Index = () => {
 
       <div className="relative z-10 [&>section]:bg-background/80 [&>section]:backdrop-blur-sm">
         <HomeRails />
+        <AiRecommendations title="AI Picks for You" />
         <CmsBannerStrip position="strip" />
         <Benefits />
         <ProductCard />

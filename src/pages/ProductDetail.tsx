@@ -25,6 +25,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useProtectedAction } from "@/hooks/useProtectedAction";
 import { AuthModal } from "@/components/auth/AuthModal";
 import ProductReviews from "@/components/ProductReviews";
+import ReviewSummary from "@/components/ai/ReviewSummary";
+import AiRecommendations from "@/components/ai/AiRecommendations";
 
 interface ProductFull {
   id: string;
@@ -370,8 +372,16 @@ const ProductDetail = () => {
           </section>
         )}
 
+        {/* AI Review Summary */}
+        <div className="mt-12">
+          <ReviewSummary productId={product.id} />
+        </div>
+
         {/* Reviews */}
         <ProductReviews productId={product.id} />
+
+        {/* AI Recommendations */}
+        <AiRecommendations productId={product.id} title="You may also like" />
 
         {/* Related */}
         {related.length > 0 && (
